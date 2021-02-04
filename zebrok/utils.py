@@ -32,7 +32,7 @@ def resolve_hostname(host):
 def get_worker_port_and_host():
     """
     Retrieves port number and the host worker will
-    be listening on configuration
+    be listening from configuration
     """
     port = None
     host = None
