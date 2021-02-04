@@ -15,21 +15,21 @@ def get_socket_address_from_conf(worker=False):
     """
     Retrieves socket address configuration
     """
-    port, host = __get_worker_port_and_host()
+    port, host = get_worker_port_and_host()
     socket_address = f"tcp://127.0.0.1:{str(port)}"
 
     if not worker:
-        worker_ip = __resolve_hostname(host)
+        worker_ip = resolve_hostname(host)
         socket_address = f"tcp://{worker_ip}:{str(port)}"
 
     logger.info(f"Connecting on {socket_address}")
     return socket_address
 
-def __resolve_hostname(host):
+def resolve_hostname(host):
     return socket.gethostbyname(host)
 
 
-def __get_worker_port_and_host():
+def get_worker_port_and_host():
     """
     Retrieves port number and the host worker will
     be listening on configuration
