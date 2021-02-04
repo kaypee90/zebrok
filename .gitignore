@@ -32,3 +32,4 @@ coverage.xml
 test.db
 pip-wheel-metadata/
 .vscode/
+.mypy_cache/
