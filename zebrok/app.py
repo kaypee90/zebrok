@@ -25,4 +25,5 @@ class Task(object):
     def __publish_task(cls, task_payload):
         sock = SocketConnection.bind_to_socket()
         sock.send_string(task_payload)
+        sock.close()
         return True
