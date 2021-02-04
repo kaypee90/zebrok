@@ -3,6 +3,7 @@ from zebrok.utils import (pickle_task, unpickle_task, get_worker_port_and_host,
     resolve_hostname, get_socket_address_from_conf)
 from zebrok.registry import TaskRegistry
 from zebrok import app
+from zebrok.worker import Worker
 
 class TestUtils(unittest.TestCase):
 
@@ -55,6 +56,24 @@ class TestRegistry(unittest.TestCase):
         self.assertEqual(0, len(self.registry))
         with self.assertRaises(KeyError):
             self.registry["hello"]
+
+class TestTask(unittest.TestCase):
+
+    def setUp(self):
+        @app.Task
+        def hello(name):
+            print(f"Hello World, {name}")
+        self.func = hello
+
+        self.worker = Worker()
+        self.worker.register(hello)
+
+    @unittest.skip("Requires to be terminated manually")
+    def test_run_task(self):
+        result = self.func.run(name="Kwabena")
+        self.worker.start()
+        self.assertTrue(result)
+
 
 if __name__ == '__main__':
     unittest.main()
