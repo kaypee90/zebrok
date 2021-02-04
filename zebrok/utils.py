@@ -1,6 +1,7 @@
 import os
 import json
 import logging
+import socket
 
 logging.basicConfig(
     level=logging.DEBUG, format="%(asctime)s %(name)s %(levelname)s:%(message)s"
@@ -18,10 +19,14 @@ def get_socket_address_from_conf(worker=False):
     socket_address = f"tcp://127.0.0.1:{str(port)}"
 
     if not worker:
-        socket_address = f"tcp://{host}:{str(port)}"
+        worker_ip = __resolve_hostname(host)
+        socket_address = f"tcp://{worker_ip}:{str(port)}"
 
     logger.info(f"Connecting on {socket_address}")
     return socket_address
+
+def __resolve_hostname(host):
+    return socket.gethostbyname(host)
 
 
 def __get_worker_port_and_host():

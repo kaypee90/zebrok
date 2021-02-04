@@ -1,2 +1,2 @@
 WORKER_PORT = 5690
-WORKER_HOST = "127.0.0.1"
+WORKER_HOST = "localhost"
