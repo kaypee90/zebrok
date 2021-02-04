@@ -17,7 +17,7 @@ class Worker(object):
 
     def start(self):
         """
-        Starts worker to be reciving incoming
+        Starts worker to be receiving incoming
         messages
         """
         try:
