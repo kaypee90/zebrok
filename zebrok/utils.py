@@ -4,7 +4,8 @@ import logging
 import socket
 
 logging.basicConfig(
-    level=logging.DEBUG, format="%(asctime)s %(name)s %(levelname)s:%(message)s"
+    level=logging.DEBUG,
+    format="%(asctime)s %(name)s %(levelname)s:%(message)s"
 )
 logHandler = logging.StreamHandler()
 logger = logging.getLogger(__name__)
@@ -24,6 +25,7 @@ def get_socket_address_from_conf(worker=False):
 
     logger.info(f"Connecting on {socket_address}")
     return socket_address
+
 
 def resolve_hostname(host):
     return socket.gethostbyname(host)
