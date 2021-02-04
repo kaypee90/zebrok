@@ -13,37 +13,49 @@ def get_socket_address_from_conf(worker=False):
     '''
     Retrieves socket address configuration
     '''
-    socket_address = None
+    port, host = __get_worker_port_and_host()
+    socket_address = f"tcp://127.0.0.1:{str(port)}"
+
+    if not worker:
+        socket_address = f"tcp://{host}:{str(port)}"
+    
+    logger.info(f"Connecting on {socket_address}")
+    return socket_address
+
+def __get_worker_port_and_host():
+    '''
+    Retrieves port number and the host worker will 
+    be listening on configuration
+    '''
+    port = None
+    host = None
     
     try:
         from django.conf import settings
-        if not socket_address and worker:
-            socket_address = settings.ZMQ_WORKER_ADDR
+        if not port:
+            port = settings.WORKER_PORT
 
-        if not socket_address and not worker:
-            socket_address = settings.ZMQ_ADDR
+        if not host:
+            host = settings.WORKER_HOST
     except Exception:
         logger.warning("Attempt to load from django settings failed!")
 
-    if not socket_address and worker:
-        socket_address = os.environ.get("ZMQ_WORKER_ADDR")
+    if not port:
+        port = os.environ.get("WORKER_PORT")
 
-    if not socket_address and not worker:
-        socket_address = os.environ.get("ZMQ_ADDR")
+    if not host:
+        host = os.environ.get("WORKER_HOST")
     
-    try:
-        if worker:
-            from .config import ZMQ_WORKER_ADDR
-            socket_address = ZMQ_WORKER_ADDR
-        else:
-            from .config import ZMQ_ADDR
-            socket_address = ZMQ_ADDR
-    except ImportError:
-        logger.warning("No config file found!")
+    # Load default values
+    if not port:
+        from .config import WORKER_PORT
+        port = WORKER_PORT
+        
+    if not host:
+        from .config import WORKER_HOST
+        host = WORKER_HOST   
 
-    logger.info(f"Connection on {socket_address}")
-
-    return socket_address
+    return port, host
 
 def pickle_task(task_obj):
     '''
