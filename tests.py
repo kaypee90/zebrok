@@ -1,6 +1,8 @@
 import unittest
 from zebrok.utils import (pickle_task, unpickle_task, get_worker_port_and_host,
     resolve_hostname, get_socket_address_from_conf)
+from zebrok.registry import TaskRegistry
+from zebrok import app
 
 class TestUtils(unittest.TestCase):
 
@@ -30,7 +32,29 @@ class TestUtils(unittest.TestCase):
     def test_get_socket_address_from_conf_for_worker(self):
         address = get_socket_address_from_conf(True)
         self.assertEqual(address, 'tcp://127.0.0.1:5690')
-    
+
+class TestRegistry(unittest.TestCase):
+
+    def setUp(self):
+        self.registry = TaskRegistry()
+        @app.Task
+        def hello():
+            print("Hello World")
+        self.registry.register(hello)
+
+    def test_register_task(self):
+        @app.Task
+        def scream():
+            print("HAAAAYY!!!")
+        self.registry.register(scream)
+        self.assertEqual(2, len(self.registry))
+        self.assertEqual(scream, self.registry["scream"])
+
+    def test_unregister_task(self):
+        self.registry.unregister("hello")
+        self.assertEqual(0, len(self.registry))
+        with self.assertRaises(KeyError):
+            self.registry["hello"]
 
 if __name__ == '__main__':
     unittest.main()
