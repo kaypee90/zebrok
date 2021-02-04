@@ -1,6 +1,7 @@
 import zmq
 from .utils import get_socket_address_from_conf
 
+
 class SocketConnection(object):
     @staticmethod
     def bind_to_socket():
