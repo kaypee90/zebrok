@@ -9,7 +9,7 @@ class Worker(object):
     tasks = TaskRegistry()
 
     def __init__(self):
-        self.sock = SocketConnection().connect_to_socket()
+        self.sock, self.context = SocketConnection().connect_to_socket()
 
     def register(self, task):
         """
@@ -38,3 +38,4 @@ class Worker(object):
         Closes socket connection
         """
         self.sock.close()
+        self.context.term()
