@@ -1,5 +1,4 @@
 from .connection import SocketConnection
-from .utils import pickle_task
 
 
 class Task(object):
@@ -17,12 +16,12 @@ class Task(object):
         return self._arg
 
     def run(self, *args, **kwargs):
-        task = {"task": self._arg.__name__, "kwargs": kwargs}
-        payload = pickle_task(task)
+        payload = {"task": self._arg.__name__, "kwargs": kwargs}
         return self.__publish_task(payload)
 
     @classmethod
     def __publish_task(cls, task_payload):
         sock = SocketConnection.bind_to_socket()
-        sock.send_string(task_payload)
+        sock.send_json(task_payload)
+        sock.close()
         return True

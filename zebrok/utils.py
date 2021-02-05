@@ -1,33 +1,33 @@
 import os
-import json
-import logging
+import socket
+from .logger import setup_logging
 
-logging.basicConfig(
-    level=logging.DEBUG, format="%(asctime)s %(name)s %(levelname)s:%(message)s"
-)
-logHandler = logging.StreamHandler()
-logger = logging.getLogger(__name__)
-logger.addHandler(logHandler)
+logger = setup_logging(__name__)
 
 
 def get_socket_address_from_conf(worker=False):
     """
     Retrieves socket address configuration
     """
-    port, host = __get_worker_port_and_host()
+    port, host = get_worker_port_and_host()
     socket_address = f"tcp://127.0.0.1:{str(port)}"
 
     if not worker:
-        socket_address = f"tcp://{host}:{str(port)}"
+        worker_ip = resolve_hostname(host)
+        socket_address = f"tcp://{worker_ip}:{str(port)}"
 
     logger.info(f"Connecting on {socket_address}")
     return socket_address
 
 
-def __get_worker_port_and_host():
+def resolve_hostname(host):
+    return socket.gethostbyname(host)
+
+
+def get_worker_port_and_host():
     """
     Retrieves port number and the host worker will
-    be listening on configuration
+    be listening from configuration
     """
     port = None
     host = None
@@ -61,19 +61,3 @@ def __get_worker_port_and_host():
         host = WORKER_HOST
 
     return port, host
-
-
-def pickle_task(task_obj):
-    """
-    Convert task dict to a json string
-    """
-    return json.dumps(task_obj)
-
-
-def unpickle_task(task_str):
-    """
-    Convert json string representation of a tasks
-     dict to a python dict
-    """
-    logger.info("Received task!")
-    return json.loads(task_str)
