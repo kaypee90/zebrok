@@ -21,7 +21,8 @@ class Task(object):
 
     @classmethod
     def __publish_task(cls, task_payload):
-        sock = SocketConnection.bind_to_socket()
+        sock, context = SocketConnection.bind_to_socket()
         sock.send_json(task_payload)
         sock.close()
+        context.term()
         return True
