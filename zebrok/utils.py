@@ -1,15 +1,8 @@
 import os
-import json
-import logging
 import socket
+from .logger import setup_logging
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s %(name)s %(levelname)s:%(message)s"
-)
-logHandler = logging.StreamHandler()
-logger = logging.getLogger(__name__)
-logger.addHandler(logHandler)
+logger = setup_logging(__name__)
 
 
 def get_socket_address_from_conf(worker=False):
@@ -68,19 +61,3 @@ def get_worker_port_and_host():
         host = WORKER_HOST
 
     return port, host
-
-
-def pickle_task(task_obj):
-    """
-    Convert task dict to a json string
-    """
-    return json.dumps(task_obj)
-
-
-def unpickle_task(task_str):
-    """
-    Convert json string representation of a tasks
-     dict to a python dict
-    """
-    logger.info("Received task!")
-    return json.loads(task_str)

@@ -1,6 +1,8 @@
 from .connection import SocketConnection
-from .utils import unpickle_task
 from .registry import TaskRegistry
+from .logger import setup_logging
+
+logger = setup_logging(__name__)
 
 
 class Worker(object):
@@ -22,10 +24,11 @@ class Worker(object):
         """
         try:
             while True:
-                message = self.sock.recv()
-                payload = unpickle_task(message)
-                func = self.tasks.get(payload["task"])
-                kwargs = payload["kwargs"]
+                message = self.sock.recv_json()
+                task_name = message.pop("task")
+                logger.info(f"received task: {task_name}")
+                func = self.tasks.get(task_name)
+                kwargs = message.pop("kwargs")
                 func(**kwargs)
         except KeyboardInterrupt:
             self.stop()
