@@ -1,5 +1,3 @@
-# from tasks import greet
+from tasks import greet
 
-# greet.run(firstname="Kay", lastname="Pee")
-
-from zebrok import discovery
+greet.run(firstname="Kay", lastname="Pee")
