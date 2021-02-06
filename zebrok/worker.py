@@ -8,8 +8,9 @@ logger = setup_logging(__name__)
 class Worker(object):
     tasks = TaskRegistry()
 
-    def __init__(self):
+    def __init__(self, auto_discover=False):
         self.sock, self.context = SocketConnection().connect_to_socket()
+        self.auto_discover = auto_discover
 
     def register(self, task):
         """
