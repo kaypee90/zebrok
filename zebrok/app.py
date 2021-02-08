@@ -17,10 +17,10 @@ class Task(object):
 
     def run(self, *args, **kwargs):
         payload = {"task": self._arg.__name__, "kwargs": kwargs}
-        return self.__publish_task(payload)
+        return self._publish_task(payload)
 
     @classmethod
-    def __publish_task(cls, task_payload):
+    def _publish_task(cls, task_payload):
         sock, context = SocketConnection.bind_to_socket()
         sock.send_json(task_payload)
         sock.close()
