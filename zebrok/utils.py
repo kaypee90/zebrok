@@ -10,11 +10,8 @@ def get_socket_address_from_conf(worker=False):
     Retrieves socket address configuration
     """
     port, host = get_worker_port_and_host()
-    socket_address = f"tcp://127.0.0.1:{str(port)}"
-
-    if not worker:
-        worker_ip = resolve_hostname(host)
-        socket_address = f"tcp://{worker_ip}:{str(port)}"
+    host_ip = resolve_hostname(host)
+    socket_address = f"tcp://{host_ip}:{str(port)}"
 
     logger.info(f"Connecting on {socket_address}")
     return socket_address
