@@ -22,7 +22,6 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(address, 'tcp://127.0.0.1:5690')
 
 
-
 class TestRegistry(unittest.TestCase):
 
     def setUp(self):
