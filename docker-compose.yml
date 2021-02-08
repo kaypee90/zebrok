@@ -1,0 +1,26 @@
+version: "3"
+
+services:
+  worker:
+      build: .
+      volumes:
+        - ./:/code
+      environment:
+        - WORKER_HOST=publisher
+        - WORKER_PORT=5690
+      command: sleep 365d
+      ports:
+        - "5690:5690"
+      expose:
+        - "5690"
+
+  publisher:
+      build: .
+      volumes:
+        - ./:/code
+      environment:
+        - WORKER_HOST=publisher
+        - WORKER_PORT=5690
+      command: sleep 365d
+      links:
+        - worker
