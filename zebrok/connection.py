@@ -15,6 +15,6 @@ class SocketConnection(object):
     def connect_to_socket():
         context = zmq.Context()
         sock = context.socket(zmq.PULL)
-        socket_address = get_socket_address_from_conf(worker=True)
+        socket_address = get_socket_address_from_conf()
         sock.connect(socket_address)
         return sock, context

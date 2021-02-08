@@ -1,5 +1,5 @@
 import unittest
-from zebrok.utils import (get_worker_port_and_host,
+from zebrok.utils import (get_publisher_port_and_host,
                           resolve_hostname, get_socket_address_from_conf)
 from zebrok.registry import TaskRegistry
 from zebrok import app
@@ -8,8 +8,8 @@ from zebrok.worker import Worker
 
 class TestUtils(unittest.TestCase):
 
-    def test_get_worker_port_and_host(self):
-        port, host = get_worker_port_and_host()
+    def test_get_publisher_port_and_host(self):
+        port, host = get_publisher_port_and_host()
         self.assertEqual(port, 5690)
         self.assertEqual(host, 'localhost')
 
@@ -17,13 +17,10 @@ class TestUtils(unittest.TestCase):
         host_ip = resolve_hostname('localhost')
         self.assertEqual(host_ip, '127.0.0.1')
 
-    def test_get_socket_address_from_conf_for_client(self):
+    def test_get_socket_address_from_conf(self):
         address = get_socket_address_from_conf()
         self.assertEqual(address, 'tcp://127.0.0.1:5690')
 
-    def test_get_socket_address_from_conf_for_worker(self):
-        address = get_socket_address_from_conf(True)
-        self.assertEqual(address, 'tcp://127.0.0.1:5690')
 
 
 class TestRegistry(unittest.TestCase):

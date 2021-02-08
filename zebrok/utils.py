@@ -5,11 +5,11 @@ from .logger import setup_logging
 logger = setup_logging(__name__)
 
 
-def get_socket_address_from_conf(worker=False):
+def get_socket_address_from_conf():
     """
     Retrieves socket address configuration
     """
-    port, host = get_worker_port_and_host()
+    port, host = get_publisher_port_and_host()
     host_ip = resolve_hostname(host)
     socket_address = f"tcp://{host_ip}:{str(port)}"
 
@@ -21,9 +21,9 @@ def resolve_hostname(host):
     return socket.gethostbyname(host)
 
 
-def get_worker_port_and_host():
+def get_publisher_port_and_host():
     """
-    Retrieves port number and the host worker will
+    Retrieves port number and the host publisher will
     be listening from configuration
     """
     port = None
@@ -33,28 +33,28 @@ def get_worker_port_and_host():
         from django.conf import settings
 
         if not port:
-            port = settings.WORKER_PORT
+            port = settings.PUBLISHER_PORT
 
         if not host:
-            host = settings.WORKER_HOST
+            host = settings.PUBLISHER_HOST
     except Exception:
         logger.warning("Attempt to load from django settings failed!")
 
     if not port:
-        port = os.environ.get("WORKER_PORT")
+        port = os.environ.get("PUBLISHER_PORT")
 
     if not host:
-        host = os.environ.get("WORKER_HOST")
+        host = os.environ.get("PUBLISHER_HOST")
 
     # Load default values
     if not port:
-        from .config import WORKER_PORT
+        from .config import PUBLISHER_PORT
 
-        port = WORKER_PORT
+        port = PUBLISHER_PORT
 
     if not host:
-        from .config import WORKER_HOST
+        from .config import PUBLISHER_HOST
 
-        host = WORKER_HOST
+        host = PUBLISHER_HOST
 
     return port, host
