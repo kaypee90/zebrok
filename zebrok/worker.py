@@ -1,9 +1,9 @@
 from .connection import SocketConnection
 from .registry import TaskRegistry
-from .logger import setup_logging
+from .logging import create_logger
 from .discovery import get_discovered_task_by_name
 
-logger = setup_logging(__name__)
+logger = create_logger(__name__)
 
 
 class Worker(object):

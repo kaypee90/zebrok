@@ -1,8 +1,8 @@
 import os
 import socket
-from .logger import setup_logging
+from .logging import create_logger
 
-logger = setup_logging(__name__)
+logger = create_logger(__name__)
 
 
 def get_socket_address_from_conf():
