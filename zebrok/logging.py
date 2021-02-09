@@ -1,7 +1,7 @@
 import logging
 
 
-def setup_logging(module_name):
+def create_logger(module_name):
     logging.basicConfig(
                         level=logging.DEBUG,
                         format="%(asctime)s %(name)s %(levelname)s:%(message)s"
