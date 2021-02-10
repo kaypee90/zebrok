@@ -2,6 +2,10 @@ import logging
 
 
 def create_logger(module_name):
+    '''
+    Initializers a new logger object
+    '''
+
     logging.basicConfig(
                         level=logging.DEBUG,
                         format="%(asctime)s %(name)s %(levelname)s:%(message)s"
