@@ -1,3 +1,6 @@
+'''
+Example file showing how tasks can be created for zebrok
+'''
 from zebrok import app
 import time
 
