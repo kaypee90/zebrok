@@ -3,7 +3,7 @@ import logging
 
 def create_logger(module_name):
     '''
-    Initializers a new logger object
+    Initializes a new logger object
     '''
 
     logging.basicConfig(

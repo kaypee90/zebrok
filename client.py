@@ -1,5 +1,5 @@
 """
-Sample publisher showing how a registered task
+Example file showing how a registered task
 can be called and executed on a zebrok worker
 """
 from tasks import long_running_task_one, long_running_task_two

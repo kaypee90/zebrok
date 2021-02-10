@@ -1,5 +1,5 @@
 """
-Sample startup file showing how zebrok worker can be configured
+Example startup file showing how zebrok worker can be configured
 for an application
 """
 
