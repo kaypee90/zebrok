@@ -4,6 +4,17 @@ from zebrok.utils import (get_publisher_port_and_host,
 from zebrok.registry import TaskRegistry
 from zebrok import app
 from zebrok.worker import Worker
+from zebrok.discovery import get_discovered_task_by_name
+
+
+class TestDiscovery(unittest.TestCase):
+
+    def test_get_discovered_task_by_name(self):
+        expected_discovered_task_name = "long_running_task_one"
+        func = get_discovered_task_by_name(expected_discovered_task_name)
+        actual_discovered_task_name = func.get_task_object().__name__
+        self.assertEqual(expected_discovered_task_name,
+                         actual_discovered_task_name)
 
 
 class TestUtils(unittest.TestCase):
@@ -53,10 +64,21 @@ class TestTask(unittest.TestCase):
         @app.Task
         def hello(name):
             print(f"Hello World, {name}")
+            return name
         self.func = hello
 
         self.worker = Worker()
         self.worker.register(hello)
+
+    def test_callable_for_task(self):
+        expected_name = "KayPee"
+        actual_name = self.func(name=expected_name)
+        self.assertEqual(expected_name, actual_name)
+
+    def test_get_task_object(self):
+        expected_func_name = "hello"
+        actual_func_name = self.func.get_task_object().__name__
+        self.assertEqual(expected_func_name, actual_func_name)
 
     @unittest.skip("Requires to be terminated manually")
     def test_run_task(self):
