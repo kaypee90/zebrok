@@ -38,7 +38,7 @@ worker.start()
 ```
 from tasks import long_running_task
 
-long_running_task_one.run(param="dowork")
+long_running_task.run(param="dowork")
 ```
 
 - This library comes with the benefits of 0Mq
