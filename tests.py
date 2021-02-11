@@ -6,13 +6,16 @@ from zebrok import app
 from zebrok.worker import Worker
 from zebrok.discovery import get_discovered_task_by_name
 
+
 class TestDiscovery(unittest.TestCase):
 
     def test_get_discovered_task_by_name(self):
         expected_discovered_task_name = "long_running_task_one"
         func = get_discovered_task_by_name(expected_discovered_task_name)
         actual_discovered_task_name = func.get_task_object().__name__
-        self.assertEqual(expected_discovered_task_name, actual_discovered_task_name)
+        self.assertEqual(expected_discovered_task_name,
+                         actual_discovered_task_name)
+
 
 class TestUtils(unittest.TestCase):
 
@@ -77,7 +80,7 @@ class TestTask(unittest.TestCase):
         actual_func_name = self.func.get_task_object().__name__
         self.assertEqual(expected_func_name, actual_func_name)
 
-    @unittest.skip("Requires to be terminated manually")
+    # @unittest.skip("Requires to be terminated manually")
     def test_run_task(self):
         result = self.func.run(name="Kwabena")
         self.worker.start()
