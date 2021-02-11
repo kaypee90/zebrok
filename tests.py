@@ -53,10 +53,21 @@ class TestTask(unittest.TestCase):
         @app.Task
         def hello(name):
             print(f"Hello World, {name}")
+            return name
         self.func = hello
 
         self.worker = Worker()
         self.worker.register(hello)
+
+    def test_callable_for_task(self):
+        expected_name = "KayPee"
+        actual_name = self.func(name=expected_name)
+        self.assertEqual(expected_name, actual_name)
+
+    def test_get_task_object(self):
+        expected_func_name = "hello"
+        actual_func_name = self.func.get_task_object().__name__
+        self.assertEqual(expected_func_name, actual_func_name)
 
     @unittest.skip("Requires to be terminated manually")
     def test_run_task(self):
