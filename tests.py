@@ -68,7 +68,7 @@ class TestTask(unittest.TestCase):
         self.func = hello
 
         self.worker = Worker()
-        self.worker.register(hello)
+        self.worker.register_task(hello)
 
     def test_callable_for_task(self):
         expected_name = "KayPee"
