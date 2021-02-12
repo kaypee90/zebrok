@@ -1,7 +1,7 @@
 import unittest
 from zebrok.utils import (get_publisher_port_and_host,
                           resolve_hostname, get_socket_address_from_conf)
-from zebrok.registry import TaskRegistry
+from zebrok.registry import InMemoryTaskRegistry
 from zebrok import app
 from zebrok.worker import Worker
 from zebrok.discovery import get_discovered_task_by_name
@@ -36,7 +36,7 @@ class TestUtils(unittest.TestCase):
 class TestRegistry(unittest.TestCase):
 
     def setUp(self):
-        self.registry = TaskRegistry()
+        self.registry = InMemoryTaskRegistry()
 
         @app.Task
         def hello():
