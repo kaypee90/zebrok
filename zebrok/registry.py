@@ -7,6 +7,7 @@ class BaseTaskRegistry(ABC):
     Concrete task registry types must
     inherit this absract class
     '''
+
     @abstractmethod
     def register(self, task):
         raise NotImplementedError
