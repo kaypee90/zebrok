@@ -1,5 +1,5 @@
 from .connection import SocketConnection
-from .registry import TaskRegistry
+from .registry import InMemoryTaskRegistry
 from .logging import create_logger
 from .discovery import get_discovered_task_by_name
 
@@ -7,7 +7,7 @@ logger = create_logger(__name__)
 
 
 class Worker(object):
-    tasks = TaskRegistry()
+    tasks = InMemoryTaskRegistry()
 
     def __init__(self, auto_discover=False):
         self.sock, self.context = SocketConnection().connect_to_socket()

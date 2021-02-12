@@ -1,7 +1,18 @@
 import inspect
+from abc import ABC, abstractmethod
 
 
-class TaskRegistry(dict):
+class BaseTaskRegistry(ABC):
+    @abstractmethod
+    def register(self, task):
+        raise NotImplementedError
+
+    @abstractmethod
+    def unregister(self, name):
+        raise NotImplementedError
+
+
+class InMemoryTaskRegistry(BaseTaskRegistry, dict):
     def register(self, task):
         '''
         Adds a task to in-memory registry
