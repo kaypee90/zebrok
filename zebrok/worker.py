@@ -10,8 +10,8 @@ class Worker(object):
     tasks = InMemoryTaskRegistry()
 
     def __init__(self, auto_discover=False):
-        self.sock, self.context = SocketConnection().connect_to_socket()
         self.auto_discover = auto_discover
+        self.sock, self.context = SocketConnection.initialize(bind_to_socket=False)
 
     def _execute_task(self, task_name, **kwargs):
         '''
@@ -55,3 +55,4 @@ class Worker(object):
         """
         self.sock.close()
         self.context.term()
+

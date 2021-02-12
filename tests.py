@@ -80,7 +80,7 @@ class TestTask(unittest.TestCase):
         actual_func_name = self.func.get_task_object().__name__
         self.assertEqual(expected_func_name, actual_func_name)
 
-    @unittest.skip("Requires to be terminated manually")
+    # @unittest.skip("Requires to be terminated manually")
     def test_run_task(self):
         result = self.func.run(name="Kwabena")
         self.worker.start()

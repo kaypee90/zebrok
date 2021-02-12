@@ -1,10 +1,24 @@
 from .connection import SocketConnection
 
 
+class TaskPublisher(object):
+    '''
+    Publishes received tasks to worker
+    '''
+    
+    @staticmethod
+    def publish_task(task, *args, **kwargs):
+        with SocketConnection(bind=True) as sock:
+            payload = {"task": task.__name__, "kwargs": kwargs}
+            sock.send_json(payload)
+        return True
+
+
 class Task(object):
     """
     Extends methods to be used with task queue
     """
+    publisher = TaskPublisher
 
     def __init__(self, arg):
         self._arg = arg
@@ -16,13 +30,4 @@ class Task(object):
         return self._arg
 
     def run(self, *args, **kwargs):
-        payload = {"task": self._arg.__name__, "kwargs": kwargs}
-        return self._publish_task(payload)
-
-    @classmethod
-    def _publish_task(cls, task_payload):
-        sock, context = SocketConnection.bind_to_socket()
-        sock.send_json(task_payload)
-        sock.close()
-        context.term()
-        return True
+        return self.publisher.publish_task(self._arg, *args, **kwargs)

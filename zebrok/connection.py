@@ -2,28 +2,48 @@ import zmq
 from .utils import get_socket_address_from_conf
 
 
-class SocketConnection(object):
+class ZmqConnection(object):
     '''
     Handles message queue socket connections
     '''
-    @staticmethod
-    def bind_to_socket():
-        '''
-        Binds the publisher to the sockek
-        '''
+    @classmethod
+    def initialize(cls, bind_to_socket):
         context = zmq.Context()
-        sock = context.socket(zmq.PUSH)
         socket_address = get_socket_address_from_conf()
-        sock.bind(socket_address)
-        return sock, context
+        if bind_to_socket:
+            sock = cls._bind_to_socket(context, socket_address)
+        else:
+            sock = cls._connect_to_socket(context, socket_address)
 
-    @staticmethod
-    def connect_to_socket():
-        '''
-        Connects a worker to the socker connection
-        '''
-        context = zmq.Context()
-        sock = context.socket(zmq.PULL)
-        socket_address = get_socket_address_from_conf()
-        sock.connect(socket_address)
         return sock, context
+        
+
+    @classmethod
+    def _bind_to_socket(cls, context, socket_address):
+        '''
+        Binds the publisher to the socket connection
+        '''
+        sock = context.socket(zmq.PUSH)
+        sock.bind(socket_address)
+        return sock
+
+    @classmethod
+    def _connect_to_socket(cls, context, socket_address):
+        '''
+        Connects a worker to the socket connection
+        '''
+        sock = context.socket(zmq.PULL)
+        sock.connect(socket_address)
+        return sock
+
+
+class SocketConnection(ZmqConnection):
+    def __init__(self, bind=False):
+        self.sock, self.context = super().initialize(bind)
+
+    def __enter__(self):
+        return self.sock
+
+    def __exit__(self, type, value, traceback):
+        self.sock.close()
+        self.context.term()
