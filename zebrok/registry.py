@@ -13,6 +13,10 @@ class BaseTaskRegistry(ABC):
 
 
 class InMemoryTaskRegistry(BaseTaskRegistry, dict):
+    """
+    In-memory implementation of Task registry
+    """
+
     def register(self, task):
         '''
         Adds a task to in-memory registry
