@@ -1,49 +1,48 @@
+import enum
+import socket
 import zmq
-from .utils import get_socket_address_from_conf
 
 
-class ZmqConnection(object):
-    '''
-    Handles message queue socket connections
-    '''
-    @classmethod
-    def initialize(cls, bind_to_socket):
-        context = zmq.Context()
-        socket_address = get_socket_address_from_conf()
-        if bind_to_socket:
-            sock = cls._bind_to_socket(context, socket_address)
-        else:
-            sock = cls._connect_to_socket(context, socket_address)
-
-        return sock, context
-        
-
-    @classmethod
-    def _bind_to_socket(cls, context, socket_address):
-        '''
-        Binds the publisher to the socket connection
-        '''
-        sock = context.socket(zmq.PUSH)
-        sock.bind(socket_address)
-        return sock
-
-    @classmethod
-    def _connect_to_socket(cls, context, socket_address):
-        '''
-        Connects a worker to the socket connection
-        '''
-        sock = context.socket(zmq.PULL)
-        sock.connect(socket_address)
-        return sock
+class SocketType(enum.Enum):
+    ZmqPull = zmq.PULL
+    ZmqPush = zmq.PUSH
 
 
-class SocketConnection(ZmqConnection):
-    def __init__(self, bind=False):
-        self.sock, self.context = super().initialize(bind)
+class BaseSocketConnection(object):
+    def __init__(self, socket_type, host, port, context):
+        self.socket_type = socket_type.value
+        self.host = socket.gethostbyname(host)
+        self.port = port
+        self.socket_address = f"tcp://{self.host}:{str(self.port)}"
+        self.context = context
+        self.socket = None
 
-    def __enter__(self):
-        return self.sock
 
-    def __exit__(self, type, value, traceback):
-        self.sock.close()
+    def close(self):
+        raise NotImplementedError
+
+
+class ZmqBindConnection(BaseSocketConnection):
+    def __init__(self, socket_type, host, port, context=None):
+        if not context:
+            context = zmq.Context()
+        super().__init__(socket_type, host, port, context)
+        self.socket = self.context.socket(self.socket_type)
+        self.socket.bind(self.socket_address)
+
+    def close(self):
+        self.socket.close()
+        self.context.term()
+
+
+class ZmqConnectTypeConnection(BaseSocketConnection):
+    def __init__(self, socket_type, host, port, context=None):
+        if not context:
+            context = zmq.Context()
+        super().__init__(socket_type, host, port, context)
+        self.socket = self.context.socket(self.socket_type)
+        self.socket.connect(self.socket_address)
+
+    def close(self):
+        self.socket.close()
         self.context.term()
