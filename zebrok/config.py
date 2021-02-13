@@ -1,2 +1,2 @@
-PUBLISHER_PORT = 5690
-PUBLISHER_HOST = "localhost"
+WORKER_PORT = 5690
+WORKER_HOST = "localhost"
