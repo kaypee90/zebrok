@@ -75,7 +75,7 @@ class TaskQueueWorker(object):
         self.slaves.append(worker)
     
 
-class Worker(object):
+class WorkerInitializer(object):
 
     def __init__(self, number_of_slaves=0, auto_discover=False, task_registry=None):
         self.tasks = task_registry if task_registry else InMemoryTaskRegistry()
