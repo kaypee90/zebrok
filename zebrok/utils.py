@@ -19,6 +19,8 @@ def get_socket_address_from_conf():
 
 
 def resolve_hostname(host):
+    if host == "*":
+        return host
     return socket.gethostbyname(host)
 
 
