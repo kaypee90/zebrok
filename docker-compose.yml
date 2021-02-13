@@ -6,8 +6,11 @@ services:
       volumes:
         - ./:/code
       environment:
-        - PUBLISHER_HOST=publisher
-        - PUBLISHER_PORT=5690
+        - WORKER_HOST=worker
+        - WORKER_PORT=5690
+      expose:
+        - "5690"
+        - "5691"
       command: sleep 365d
 
   publisher:
@@ -15,12 +18,14 @@ services:
       volumes:
         - ./:/code
       environment:
-        - PUBLISHER_HOST=publisher
-        - PUBLISHER_PORT=5690
+        - WORKER_HOST=worker
+        - WORKER_PORT=5690
       ports:
         - "5690:5690"
+        - "5691:5691"
       expose:
         - "5690"
+        - "5691"
       command: sleep 365d
       links:
         - worker

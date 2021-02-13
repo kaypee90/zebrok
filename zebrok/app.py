@@ -1,10 +1,10 @@
 from .connection import ZmqConnectTypeConnection, SocketType
-from .utils import get_publisher_port_and_host
+from .utils import get_worker_port_and_host
 
 
 class ZmqTaskPublisher(object):
     def __init__(self):
-        port, host = get_publisher_port_and_host()
+        port, host = get_worker_port_and_host()
         self.connection = ZmqConnectTypeConnection(SocketType.ZmqPush, host, port)
         self.socket = self.connection.socket
 

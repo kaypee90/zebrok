@@ -5,8 +5,8 @@ Brokerless task queue for python based on 0Mq
 ========================
 
 * Configuring Env Vars:
-    - PUBLISHER_HOST=
-    - PUBLISHER_PORT=
+    - WORKER_HOST=
+    - WORKER_PORT=
 
     -- `If not set defaults to localhost:5690`
 

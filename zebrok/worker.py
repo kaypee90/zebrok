@@ -3,7 +3,7 @@ from .connection import SocketType, ZmqBindConnection, ZmqConnectTypeConnection
 from .registry import InMemoryTaskRegistry
 from .logging import create_logger
 from .discovery import get_discovered_task_by_name
-from .utils import get_publisher_port_and_host
+from .utils import get_worker_port_and_host
 
 logger = create_logger(__name__)
 
@@ -85,7 +85,7 @@ class WorkerInitializer(object):
         self.tasks.register(task)
 
     def _initialize_workers(self):
-        port, host = get_publisher_port_and_host()
+        port, host = get_worker_port_and_host()
         max_workers = self.number_of_slaves + 1
         master_socket = ZmqBindConnection(SocketType.ZmqPull, host, port)
         master_worker = TaskQueueWorker(master_socket, self.runner)
