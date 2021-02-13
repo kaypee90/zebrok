@@ -17,7 +17,6 @@ class BaseSocketConnection(object):
         self.context = context
         self.socket = None
 
-
     def close(self):
         raise NotImplementedError
 
