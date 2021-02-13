@@ -31,7 +31,7 @@ class TaskRunner(object):
             logger.error("Task not found!")
 
 
-class GenericWorker(object):
+class TaskQueueWorker(object):
 
     def __init__(self, connection, runner):
         self.slaves = []
@@ -40,7 +40,7 @@ class GenericWorker(object):
         self.runner = runner
         self.current_slave = 0
 
-    def _execute_worker(self):
+    def start(self):       
         logger.info(f"starting worker on: {self.connection.socket_address}")
         try:
             while True:
@@ -57,9 +57,6 @@ class GenericWorker(object):
                     self.runner.find_and_execute_task(task_name, **kwargs)
         except KeyboardInterrupt:
             self.stop()
-
-    def start(self):
-        self._execute_worker()
 
     @property
     def number_of_slaves(self):
@@ -91,11 +88,11 @@ class Worker(object):
         """
         self.tasks.register(task)
 
-    def _execute_worker(self):
+    def _initialize_workers(self):
         port, host = get_publisher_port_and_host()
         max_workers = self.number_of_slaves + 1
         master_socket = ZmqBindConnection(SocketType.ZmqPull, host, port)
-        master_worker = GenericWorker(master_socket, self.runner)
+        master_worker = TaskQueueWorker(master_socket, self.runner)
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
             for i in range(self.number_of_slaves):
@@ -104,15 +101,15 @@ class Worker(object):
                 master_worker.add_slave(push_socket.socket)
                 
                 pull_socket_ = ZmqConnectTypeConnection(SocketType.ZmqPull, host, slave_port)
-                slave_worker = GenericWorker(pull_socket_, self.runner)
+                slave_worker = TaskQueueWorker(pull_socket_, self.runner)
                 executor.submit(slave_worker.start)
 
             executor.submit(master_worker.start)
 
     def start(self):
         """
-        Starts worker to be receiving incoming
+        Starts workers to be receiving incoming
         messages
         """
-        self._execute_worker()
+        self._initialize_workers()
         
