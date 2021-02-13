@@ -1,4 +1,23 @@
-from .connection import SocketConnection
+from .connection import ZmqConnectTypeConnection, SocketType
+from .utils import get_publisher_port_and_host
+
+
+class ZmqTaskPublisher(object):
+    def __init__(self):
+        port, host = get_publisher_port_and_host()
+        self.connection = ZmqConnectTypeConnection(SocketType.ZmqPush, host, port)
+        self.socket = self.connection.socket
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.connection.close()
+
+    def publish_task(self, task, *args, **kwargs):
+        payload = {"task": task.__name__, "kwargs": kwargs}
+        self.socket.send_json(payload)
+        return True
 
 
 class Task(object):
@@ -16,13 +35,5 @@ class Task(object):
         return self._arg
 
     def run(self, *args, **kwargs):
-        payload = {"task": self._arg.__name__, "kwargs": kwargs}
-        return self._publish_task(payload)
-
-    @classmethod
-    def _publish_task(cls, task_payload):
-        sock, context = SocketConnection.bind_to_socket()
-        sock.send_json(task_payload)
-        sock.close()
-        context.term()
-        return True
+        with ZmqTaskPublisher() as publisher:
+            return publisher.publish_task(self._arg, *args, **kwargs)

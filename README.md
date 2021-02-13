@@ -21,13 +21,14 @@ def long_running_task(param):
 
 * Configuring a worker and registering the task [start.py]
     - NB: `A task can also be discovered automatically if placed in a tasks.py file in the root folder of the project.`
+    `- You can also set number of slave worker threads to be running by passing number_of_slaves argument`
 ```
-from zebrok.worker import Worker
+from zebrok.worker import WorkerInitializer
 from tasks import long_running_task
 
 
-worker = Worker(auto_discover=True)
-worker.register(long_running_task)
+worker = WorkerInitializer(number_of_slaves=1, auto_discover=True)
+worker.register_task(long_running_task)
 worker.start()
 ```
 
