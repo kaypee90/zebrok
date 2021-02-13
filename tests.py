@@ -3,7 +3,7 @@ from zebrok.utils import (get_publisher_port_and_host,
                           resolve_hostname, get_socket_address_from_conf)
 from zebrok.registry import InMemoryTaskRegistry
 from zebrok import app
-from zebrok.worker import Worker
+from zebrok.worker import WorkerInitializer
 from zebrok.discovery import get_discovered_task_by_name
 
 
@@ -67,7 +67,7 @@ class TestTask(unittest.TestCase):
             return name
         self.func = hello
 
-        self.worker = Worker()
+        self.worker = WorkerInitializer()
         self.worker.register_task(hello)
 
     def test_callable_for_task(self):
@@ -80,7 +80,7 @@ class TestTask(unittest.TestCase):
         actual_func_name = self.func.get_task_object().__name__
         self.assertEqual(expected_func_name, actual_func_name)
 
-    # @unittest.skip("Requires to be terminated manually")
+    @unittest.skip("Requires to be terminated manually")
     def test_run_task(self):
         result = self.func.run(name="Kwabena")
         self.worker.start()
