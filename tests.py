@@ -1,6 +1,6 @@
 import unittest
 from zebrok.utils import (
-    get_publisher_port_and_host,
+    get_worker_port_and_host,
     resolve_hostname,
     get_socket_address_from_conf,
 )
@@ -19,8 +19,8 @@ class TestDiscovery(unittest.TestCase):
 
 
 class TestUtils(unittest.TestCase):
-    def test_get_publisher_port_and_host(self):
-        port, host = get_publisher_port_and_host()
+    def test_get_worker_port_and_host(self):
+        port, host = get_worker_port_and_host()
         self.assertEqual(port, 5690)
         self.assertEqual(host, "localhost")
 
