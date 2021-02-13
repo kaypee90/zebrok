@@ -1,29 +1,48 @@
+import enum
+import socket
 import zmq
-from .utils import get_socket_address_from_conf
 
 
-class SocketConnection(object):
-    '''
-    Handles message queue socket connections
-    '''
-    @staticmethod
-    def bind_to_socket():
-        '''
-        Binds the publisher to the sockek
-        '''
-        context = zmq.Context()
-        sock = context.socket(zmq.PUSH)
-        socket_address = get_socket_address_from_conf()
-        sock.bind(socket_address)
-        return sock, context
+class SocketType(enum.Enum):
+    ZmqPull = zmq.PULL
+    ZmqPush = zmq.PUSH
 
-    @staticmethod
-    def connect_to_socket():
-        '''
-        Connects a worker to the socker connection
-        '''
-        context = zmq.Context()
-        sock = context.socket(zmq.PULL)
-        socket_address = get_socket_address_from_conf()
-        sock.connect(socket_address)
-        return sock, context
+
+class BaseSocketConnection(object):
+    def __init__(self, socket_type, host, port, context):
+        self.socket_type = socket_type.value
+        self.host = socket.gethostbyname(host)
+        self.port = port
+        self.socket_address = f"tcp://{self.host}:{str(self.port)}"
+        self.context = context
+        self.socket = None
+
+
+    def close(self):
+        raise NotImplementedError
+
+
+class ZmqBindConnection(BaseSocketConnection):
+    def __init__(self, socket_type, host, port, context=None):
+        if not context:
+            context = zmq.Context()
+        super().__init__(socket_type, host, port, context)
+        self.socket = self.context.socket(self.socket_type)
+        self.socket.bind(self.socket_address)
+
+    def close(self):
+        self.socket.close()
+        self.context.term()
+
+
+class ZmqConnectTypeConnection(BaseSocketConnection):
+    def __init__(self, socket_type, host, port, context=None):
+        if not context:
+            context = zmq.Context()
+        super().__init__(socket_type, host, port, context)
+        self.socket = self.context.socket(self.socket_type)
+        self.socket.connect(self.socket_address)
+
+    def close(self):
+        self.socket.close()
+        self.context.term()
