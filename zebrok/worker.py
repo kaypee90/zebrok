@@ -18,14 +18,13 @@ class TaskRunner(object):
         Finds and execute tasks
         """
         func = self.registry.get(task_name)
-        if func:
-            func(**kwargs)
 
         if not func and self.auto_discover:
             func = get_discovered_task_by_name(task_name)
-            func(**kwargs)
 
-        if not func:
+        if func:
+            func(**kwargs)
+        else:
             logger.error("Task not found!")
 
 
