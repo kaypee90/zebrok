@@ -31,6 +31,10 @@ class TestUtils(unittest.TestCase):
         host_ip = resolve_hostname("localhost")
         self.assertEqual(host_ip, "127.0.0.1")
 
+    def test_resolve_hostname_when_not_a_name(self):
+        host_ip = resolve_hostname("*")
+        self.assertEqual(host_ip, "*")
+
     def test_get_socket_address_from_conf(self):
         address = get_socket_address_from_conf()
         self.assertEqual(address, "tcp://127.0.0.1:5690")
