@@ -1,5 +1,5 @@
 """
-Example file showing how tasks can be created for zebrok
+A sample tasks.py file showing how tasks can be created for zebrok
 """
 import time
 from zebrok import app
