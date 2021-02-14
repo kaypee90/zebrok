@@ -21,7 +21,7 @@ class TaskRunner(object):
 
         if not func and self.auto_discover:
             func = get_discovered_task_by_name(task_name)
-            
+
         if func:
             func(**kwargs)
         else:
