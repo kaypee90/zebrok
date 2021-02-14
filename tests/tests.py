@@ -1,4 +1,9 @@
+import os
+import sys
 import unittest
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+
 from zebrok.utils import (
     get_worker_port_and_host,
     resolve_hostname,
