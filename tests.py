@@ -11,7 +11,6 @@ from zebrok.discovery import get_discovered_task_by_name
 
 
 class TestDiscovery(unittest.TestCase):
-
     def test_get_discovered_task_by_name(self):
         expected_discovered_task_name = "long_running_task_one"
         func = get_discovered_task_by_name(expected_discovered_task_name)
@@ -20,7 +19,6 @@ class TestDiscovery(unittest.TestCase):
 
 
 class TestUtils(unittest.TestCase):
-
     def test_get_worker_port_and_host(self):
         port, host = get_worker_port_and_host()
 
@@ -41,7 +39,6 @@ class TestUtils(unittest.TestCase):
 
 
 class TestRegistry(unittest.TestCase):
-
     def setUp(self):
         self.registry = InMemoryTaskRegistry()
 
@@ -68,7 +65,6 @@ class TestRegistry(unittest.TestCase):
 
 
 class TestTask(unittest.TestCase):
-
     def setUp(self):
         @app.Task
         def hello(name):
