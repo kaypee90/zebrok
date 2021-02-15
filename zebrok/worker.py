@@ -1,6 +1,6 @@
 import concurrent.futures
 from .connection import SocketType, ZmqBindConnection, ZmqConnectTypeConnection
-from .registry import InMemoryTaskRegistry
+from .registry import BaseTaskRegistry, InMemoryTaskRegistry
 from .logging import create_logger
 from .discovery import get_discovered_task_by_name
 from .utils import get_worker_port_and_host
@@ -73,6 +73,8 @@ class TaskQueueWorker(object):
 
 class WorkerInitializer(object):
     def __init__(self, number_of_slaves=0, auto_discover=False, task_registry=None):
+        if task_registry:
+            assert issubclass(type(task_registry), BaseTaskRegistry)
         self.tasks = task_registry or InMemoryTaskRegistry()
         self.runner = TaskRunner(self.tasks, auto_discover)
         self.number_of_slaves = number_of_slaves
