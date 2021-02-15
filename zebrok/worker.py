@@ -73,7 +73,7 @@ class TaskQueueWorker(object):
 
 class WorkerInitializer(object):
     def __init__(self, number_of_slaves=0, auto_discover=False, task_registry=None):
-        self.tasks = task_registry if task_registry else InMemoryTaskRegistry()
+        self.tasks = task_registry or InMemoryTaskRegistry()
         self.runner = TaskRunner(self.tasks, auto_discover)
         self.number_of_slaves = number_of_slaves
 
