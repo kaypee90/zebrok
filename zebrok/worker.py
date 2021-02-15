@@ -73,9 +73,8 @@ class TaskQueueWorker(object):
 
 class WorkerInitializer(object):
     def __init__(self, number_of_slaves=0, auto_discover=False, task_registry=None):
-        if task_registry:
-            assert issubclass(type(task_registry), BaseTaskRegistry)
         self.tasks = task_registry or InMemoryTaskRegistry()
+        assert issubclass(type(self.tasks), BaseTaskRegistry)
         self.runner = TaskRunner(self.tasks, auto_discover)
         self.number_of_slaves = number_of_slaves
 
