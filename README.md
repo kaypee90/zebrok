@@ -51,5 +51,5 @@ long_running_task.run(param="dowork")
      - Open source
 
 # Todo
-- Slave workers support for k8s. Currently `number_of_slaves` must always be set to 0 on k8s
+- Add k8s support for slave workers . Currently `number_of_slaves` must always be set to 0 on k8s
 
