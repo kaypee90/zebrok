@@ -97,17 +97,23 @@ class WorkerInitializer(object):
                 slave_port = port + i + 1
 
                 push_slave_settings = (SocketType.ZmqPush, host, slave_port, master_socket.context,)
-                push_connection = ConnectionFactory.create_connection(
-                                    ConnectionType.zmq_bind, *push_slave_settings)
+                push_connection = self._create_slave_push_connection(*push_slave_settings)              
                 master_worker.add_slave(push_connection.socket)
 
                 pull_slave_settings = (SocketType.ZmqPull, host, slave_port,)
-                pull_connection = ConnectionFactory.create_connection(
-                                    ConnectionType.zmq_connect, *pull_slave_settings)
-                slave_worker = TaskQueueWorker(pull_connection, self.runner)
+                slave_worker = self._create_slave_worker(*pull_slave_settings)
                 executor.submit(slave_worker.start)
 
             executor.submit(master_worker.start)
+
+    def _create_slave_push_connection(self, *settings):
+            return ConnectionFactory.create_connection(
+                                    ConnectionType.zmq_bind, *settings)
+    
+    def _create_slave_worker(self, *settings):
+        pull_connection = ConnectionFactory.create_connection(
+                                    ConnectionType.zmq_connect, *settings)
+        return TaskQueueWorker(pull_connection, self.runner)
 
     def start(self):
         """
