@@ -54,3 +54,16 @@ class ZmqConnectTypeConnection(BaseSocketConnection):
     def close(self):
         self.socket.close()
         self.context.term()
+
+
+class ConnectionType:
+    zmq_bind = ZmqBindConnection.__name__
+    zmq_connect = ZmqConnectTypeConnection.__name__
+
+
+class ConnectionFactory:
+    @staticmethod
+    def create_connection(connection_type, *args):
+        connection = globals()[connection_type](*args)
+        assert issubclass(type(connection), BaseSocketConnection)
+        return connection
