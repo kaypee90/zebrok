@@ -65,5 +65,7 @@ class ConnectionFactory:
     @staticmethod
     def create_connection(connection_type, *args):
         connection = globals()[connection_type](*args)
-        assert issubclass(type(connection), BaseSocketConnection)
+        assert issubclass(
+            type(connection), BaseSocketConnection
+        ), "{} must inherit from {}".format(type(connection), str(BaseSocketConnection))
         return connection

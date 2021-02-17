@@ -40,9 +40,11 @@ class RegistryType:
     in_memory = InMemoryTaskRegistry.__name__
 
 
-class RegistryFactory():
+class RegistryFactory:
     @staticmethod
     def create_registry(registry_type):
         registry = globals()[registry_type]()
-        assert issubclass(type(registry), BaseTaskRegistry)
+        assert issubclass(
+            type(registry), BaseTaskRegistry
+        ), "{} must inherit from {}".format(type(registry), str(BaseTaskRegistry))
         return registry
