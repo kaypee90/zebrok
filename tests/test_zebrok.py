@@ -1,5 +1,6 @@
 import os
 import sys
+import io
 import unittest
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
@@ -142,11 +143,23 @@ class TestTask(unittest.TestCase):
         actual_func_name = self.func.get_task_object().__name__
         self.assertEqual(expected_func_name, actual_func_name)
 
-    @unittest.skip("Requires to be terminated manually")
+    # @unittest.skip("Requires to be terminated manually")
     def test_run_task(self):
-        result = self.func.run(name="Kwabena")
-        self.worker.start()
-        self.assertTrue(result)
+        old_stdout = sys.stdout
+        new_stdout = io.StringIO()
+        sys.stdout = new_stdout
+        try:
+            
+            _ = self.func.run(name="King Pee")
+        except KeyboardInterrupt:
+            pass
+        try:
+            self.worker.start()
+        except KeyboardInterrupt:
+            pass
+        output = new_stdout.getvalue()
+        self.assertTrue("Hello World, King Pee" in output)
+        sys.stdout = old_stdout
 
 
 if __name__ == "__main__":
