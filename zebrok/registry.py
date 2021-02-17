@@ -34,3 +34,15 @@ class InMemoryTaskRegistry(BaseTaskRegistry, dict):
         Removes a task to in-memory registry
         """
         self.pop(getattr(name, "name", name))
+
+
+class RegistryType:
+    in_memory = InMemoryTaskRegistry.__name__
+
+
+class RegistryFactory():
+    @staticmethod
+    def create_registry(registry_type):
+        registry = globals()[registry_type]()
+        assert issubclass(type(registry), BaseTaskRegistry)
+        return registry

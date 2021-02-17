@@ -5,25 +5,6 @@ from .logging import create_logger
 logger = create_logger(__name__)
 
 
-def get_socket_address_from_conf():
-    """
-    Retrieves socket address configuration
-    """
-    port, host = get_worker_port_and_host()
-
-    host_ip = resolve_hostname(host)
-    socket_address = f"tcp://{host_ip}:{str(port)}"
-
-    logger.info(f"Connecting on {socket_address}")
-    return socket_address
-
-
-def resolve_hostname(host):
-    if host == "*":
-        return host
-    return socket.gethostbyname(host)
-
-
 def get_worker_port_and_host():
     """
     Retrieves port number and the host worker will
