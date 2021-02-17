@@ -130,7 +130,7 @@ class TestTask(unittest.TestCase):
 
         self.func = hello
 
-        self.worker = WorkerInitializer()
+        self.worker = WorkerInitializer(number_of_slaves=1)
         self.worker.register_task(hello)
 
     def test_callable_for_task(self):
