@@ -148,8 +148,8 @@ class TestTask(unittest.TestCase):
         old_stdout = sys.stdout
         new_stdout = io.StringIO()
         sys.stdout = new_stdout
-        try:
-            
+
+        try:          
             _ = self.func.run(name="King Pee")
         except KeyboardInterrupt:
             pass
@@ -158,6 +158,7 @@ class TestTask(unittest.TestCase):
         except KeyboardInterrupt:
             pass
         output = new_stdout.getvalue()
+        
         self.assertTrue("Hello World, King Pee" in output)
         sys.stdout = old_stdout
 
