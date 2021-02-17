@@ -4,15 +4,19 @@ import unittest
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
-from zebrok.utils import (
-    get_worker_port_and_host,
-    resolve_hostname,
-    get_socket_address_from_conf,
-)
+from zebrok.utils import get_worker_port_and_host
 from zebrok.registry import InMemoryTaskRegistry
 from zebrok import app
 from zebrok.worker import WorkerInitializer
 from zebrok.discovery import get_discovered_task_by_name
+
+
+class TestConnectionFactory(unittest.TestCase):
+    pass
+
+
+class TestRegistryFactory(unittest.TestCase):
+    pass
 
 
 class TestDiscovery(unittest.TestCase):
@@ -29,18 +33,6 @@ class TestUtils(unittest.TestCase):
 
         self.assertEqual(port, 5690)
         self.assertEqual(host, "localhost")
-
-    def test_resolve_hostname(self):
-        host_ip = resolve_hostname("localhost")
-        self.assertEqual(host_ip, "127.0.0.1")
-
-    def test_resolve_hostname_when_not_a_name(self):
-        host_ip = resolve_hostname("*")
-        self.assertEqual(host_ip, "*")
-
-    def test_get_socket_address_from_conf(self):
-        address = get_socket_address_from_conf()
-        self.assertEqual(address, "tcp://127.0.0.1:5690")
 
 
 class TestRegistry(unittest.TestCase):
