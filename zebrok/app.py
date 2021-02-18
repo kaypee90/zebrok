@@ -3,11 +3,20 @@ from .utils import get_worker_port_and_host
 
 
 class TaskPublisher(object):
+    """
+    Handles pushing of tasks to task queue
+    """
+
     def __init__(self):
         port, host = get_worker_port_and_host()
-        settings = (SocketType.ZmqPush, host, port,)
+        settings = (
+            SocketType.ZmqPush,
+            host,
+            port,
+        )
         self.connection = ConnectionFactory.create_connection(
-                            ConnectionType.zmq_connect, *settings)
+            ConnectionType.zmq_connect, *settings
+        )
         self.socket = self.connection.socket
 
     def __enter__(self):

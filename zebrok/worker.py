@@ -17,6 +17,7 @@ class TaskRunner(object):
         """
         Finds and execute tasks
         """
+        task_executed = False
         func = self.registry.get(task_name)
 
         if not func and self.auto_discover:
@@ -24,8 +25,11 @@ class TaskRunner(object):
 
         if func:
             func(**kwargs)
+            task_executed = True
         else:
             logger.error("Task not found!")
+
+        return task_executed
 
 
 class TaskQueueWorker(object):
@@ -73,8 +77,9 @@ class TaskQueueWorker(object):
 
 class WorkerInitializer(object):
     def __init__(self, number_of_slaves=0, auto_discover=False, task_registry=None):
-        self.tasks = task_registry or \
-                        RegistryFactory.create_registry(RegistryType.in_memory)
+        self.tasks = task_registry or RegistryFactory.create_registry(
+            RegistryType.in_memory
+        )
         self.runner = TaskRunner(self.tasks, auto_discover)
         self.number_of_slaves = number_of_slaves
 
@@ -87,32 +92,48 @@ class WorkerInitializer(object):
     def _initialize_workers(self):
         port, host = get_worker_port_and_host()
         max_workers = self.number_of_slaves + 1
-        master_settings = (SocketType.ZmqPull, host, port,)
+        master_settings = (
+            SocketType.ZmqPull,
+            host,
+            port,
+        )
         master_socket = ConnectionFactory.create_connection(
-                            ConnectionType.zmq_bind, *master_settings)
+            ConnectionType.zmq_bind, *master_settings
+        )
         master_worker = TaskQueueWorker(master_socket, self.runner)
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
             for i in range(self.number_of_slaves):
                 slave_port = port + i + 1
 
-                push_slave_settings = (SocketType.ZmqPush, host, slave_port, master_socket.context,)
-                push_connection = self._create_slave_push_connection(*push_slave_settings)              
+                push_slave_settings = (
+                    SocketType.ZmqPush,
+                    host,
+                    slave_port,
+                    master_socket.context,
+                )
+                push_connection = self._create_slave_push_connection(
+                    *push_slave_settings
+                )
                 master_worker.add_slave(push_connection.socket)
 
-                pull_slave_settings = (SocketType.ZmqPull, host, slave_port,)
+                pull_slave_settings = (
+                    SocketType.ZmqPull,
+                    host,
+                    slave_port,
+                )
                 slave_worker = self._create_slave_worker(*pull_slave_settings)
                 executor.submit(slave_worker.start)
 
             executor.submit(master_worker.start)
 
     def _create_slave_push_connection(self, *settings):
-            return ConnectionFactory.create_connection(
-                                    ConnectionType.zmq_bind, *settings)
-    
+        return ConnectionFactory.create_connection(ConnectionType.zmq_bind, *settings)
+
     def _create_slave_worker(self, *settings):
         pull_connection = ConnectionFactory.create_connection(
-                                    ConnectionType.zmq_connect, *settings)
+            ConnectionType.zmq_connect, *settings
+        )
         return TaskQueueWorker(pull_connection, self.runner)
 
     def start(self):
