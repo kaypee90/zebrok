@@ -20,7 +20,7 @@ def long_running_task(param):
     do_some_time_consuming_task(param)
 ```
 
-* Configuring a worker and registering the task [start.py]
+* Configuring a worker and registering the task [examples/start.py]
     - NB: `A task can also be discovered automatically if placed in a tasks.py file in the root folder of the project.`
     `- You can also set number of slave worker threads to be running by passing number_of_slaves argument`
 ```
@@ -34,9 +34,9 @@ worker.start()
 ```
 
 * Starting the Zebrok Worker to listen for tasks -
-`python start.py` where start.py is the file in which you configured the worker
+`python examples/start.py` where start.py is the file in which you configured the worker
 
-* Executing a task [client.py]
+* Executing a task [examples/client.py]
 ```
 from tasks import long_running_task
 
