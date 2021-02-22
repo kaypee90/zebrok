@@ -37,10 +37,19 @@ class InMemoryTaskRegistry(BaseTaskRegistry, dict):
 
 
 class RegistryType:
+    """
+    RegistryFactory dependent class for determining
+    type of registry to create
+    """
+
     in_memory = InMemoryTaskRegistry.__name__
 
 
 class RegistryFactory:
+    """
+    Factory class for instantiating registry classes
+    """
+
     @staticmethod
     def create_registry(registry_type):
         registry = globals()[registry_type]()

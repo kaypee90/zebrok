@@ -4,17 +4,29 @@ import zmq
 
 
 class SocketType(enum.Enum):
+    """
+    Type of socket connection to be established
+    """
+
     ZmqPull = zmq.PULL
     ZmqPush = zmq.PUSH
 
 
 class SocketHost(object):
+    """
+    Resolves hosts to ip addresses
+    """
+
     @staticmethod
     def to_ip(host):
         return host if host == "*" else socket.gethostbyname(host)
 
 
 class BaseSocketConnection(object):
+    """
+    All connection implementation must inherit from this base class
+    """
+
     def __init__(self, socket_type, host, port, context):
         self.socket_type = socket_type.value
         self.host = SocketHost.to_ip(host)
@@ -31,6 +43,10 @@ class BaseSocketConnection(object):
 
 
 class ZmqBindConnection(BaseSocketConnection):
+    """
+    Specialized 0mq socket binding implementation
+    """
+
     def __init__(self, socket_type, host, port, context=None):
         if not context:
             context = zmq.Context()
@@ -44,6 +60,10 @@ class ZmqBindConnection(BaseSocketConnection):
 
 
 class ZmqConnectTypeConnection(BaseSocketConnection):
+    """
+    Specialized 0mq socket connection implementation
+    """
+
     def __init__(self, socket_type, host, port, context=None):
         if not context:
             context = zmq.Context()
@@ -57,11 +77,20 @@ class ZmqConnectTypeConnection(BaseSocketConnection):
 
 
 class ConnectionType:
+    """
+    ConnectionFactory dependent class for determining
+    which connection type to create
+    """
+
     zmq_bind = ZmqBindConnection.__name__
     zmq_connect = ZmqConnectTypeConnection.__name__
 
 
 class ConnectionFactory:
+    """
+    Factory class fo instantiating socket connections
+    """
+
     @staticmethod
     def create_connection(connection_type, *args):
         connection = globals()[connection_type](*args)
