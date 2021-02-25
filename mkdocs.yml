@@ -1,0 +1,7 @@
+site_name: Zebrok Documentation
+repo_url: https://github.com/kaypee90/zebrok
+site_author: kaypee90
+
+nav:
+    - Home: index.md
+theme: readthedocs
