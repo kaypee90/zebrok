@@ -34,3 +34,4 @@ test.db
 pip-wheel-metadata/
 .vscode/
 .mypy_cache/
+site/
