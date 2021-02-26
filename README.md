@@ -9,7 +9,6 @@ Brokerless task queue for python based on 0Mq
     - WORKER_PORT=
 
     -- `If not set defaults to localhost:5690`
-    -- `WORKER_HOST env var for a worker on k8s must always be *`
 
 * Creating A Task [tasks.py]
 ```
@@ -50,6 +49,7 @@ long_running_task.run(param="dowork")
      - Fast
      - Open source
 
-# Todo
-- Add k8s support for slave workers . Currently `number_of_slaves` must always be set to 0 on k8s
+# Using a container orchestration technology:
+- `number_of_slaves` must always be set to 0 and you can spin a number of replicas for the workers.
+- `WORKER_HOST` env var for a worker must always be `*`
 
