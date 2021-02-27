@@ -8,7 +8,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 from zebrok.utils import get_worker_port_and_host
 from zebrok.registry import InMemoryTaskRegistry, RegistryFactory, RegistryType
 from zebrok import app
-from zebrok.worker import WorkerInitializer, TaskRunner
+from zebrok.worker import WorkerInitializer, DefaultTaskRunner, BaseTaskRunner
 from zebrok.logging import create_logger
 from zebrok.discovery import get_discovered_task_by_name
 from zebrok.connection import (
@@ -26,7 +26,7 @@ class TestLoggingSetup(unittest.TestCase):
         self.assertIsNotNone(logger)
 
 
-class TestTaskRunner(unittest.TestCase):
+class TestDefaultTaskRunner(unittest.TestCase):
     def setUp(self):
         def say_hello(name):
             print(f"Hello to you {name}")
@@ -34,13 +34,13 @@ class TestTaskRunner(unittest.TestCase):
         self.registry = {"say_hello": say_hello}
 
     def test_run_registered_task(self):
-        runner = TaskRunner(self.registry, True)
-        is_executed = runner.find_and_execute_task("say_hello", **{"name": "John"})
+        runner = DefaultTaskRunner(self.registry, True)
+        is_executed = runner.execute("say_hello", **{"name": "John"})
         self.assertTrue(is_executed)
 
     def test_run_non_registered_task(self):
-        runner = TaskRunner(self.registry, True)
-        is_executed = runner.find_and_execute_task("print_name", **{"name": "Sam"})
+        runner = DefaultTaskRunner(self.registry, True)
+        is_executed = runner.execute("print_name", **{"name": "Sam"})
         self.assertFalse(is_executed)
 
 
@@ -121,6 +121,11 @@ class TestInMemoryRegistry(unittest.TestCase):
             self.registry["hello"]
 
 
+class TaskRunnerForTesting(BaseTaskRunner):
+    def execute(self, task_name, **kwargs):
+        print(f"Received task name: {task_name} with kwargs", kwargs)
+
+
 class TestTask(unittest.TestCase):
     def setUp(self):
         @app.Task
@@ -129,6 +134,8 @@ class TestTask(unittest.TestCase):
             return name
 
         self.func = hello
+
+        self.custom_runner = TaskRunnerForTesting()
 
         self.worker = WorkerInitializer(number_of_slaves=1)
         self.worker.register_task(hello)
@@ -160,6 +167,27 @@ class TestTask(unittest.TestCase):
         output = new_stdout.getvalue()
 
         self.assertTrue("Hello World, King Pee" in output)
+        sys.stdout = old_stdout
+
+    @unittest.skip("Requires to be terminated manually")
+    def test_run_task_with_custom_runner(self):
+        old_stdout = sys.stdout
+        new_stdout = io.StringIO()
+        sys.stdout = new_stdout
+
+        try:
+            _ = self.func.run(name="King Pee")
+        except KeyboardInterrupt:
+            pass
+        try:
+            self.worker.runner = self.custom_runner
+            self.worker.start()
+        except KeyboardInterrupt:
+            pass
+        output = new_stdout.getvalue()
+
+        expected = "Received task name: hello with kwargs"
+        self.assertTrue(expected in output)
         sys.stdout = old_stdout
 
 
