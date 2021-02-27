@@ -149,7 +149,7 @@ class WorkerInitializer(object):
             port,
         )
         
-        master_worker = self._create_master_worker(*master_settings)
+        master_socket, master_worker = self._create_master_worker(*master_settings)
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
             for i in range(self.number_of_slaves):
@@ -177,10 +177,11 @@ class WorkerInitializer(object):
             executor.submit(master_worker.start)
 
     def _create_master_worker(self, *settings):
-         master_socket = self._create_socket_connection(
+        socket = self._create_socket_connection(
             ConnectionType.zmq_bind, *settings
         )
-        return self._create_task_queue_worker(master_socket)
+        worker = self._create_task_queue_worker(socket)
+        return socket, worker
 
     def _create_slave_push_connection(self, *settings):
         return self._create_socket_connection(ConnectionType.zmq_bind, *settings)
@@ -194,7 +195,7 @@ class WorkerInitializer(object):
     def _create_socket_connection(self, connection_type, *settings):
         return ConnectionFactory.create_connection(connection_type, *settings)
 
-    def _create_task_queue_worker(self, connection)
+    def _create_task_queue_worker(self, connection):
         return TaskQueueWorker(connection, self.runner)
 
     def start(self):
