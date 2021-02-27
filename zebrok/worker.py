@@ -8,12 +8,34 @@ from .utils import get_worker_port_and_host
 logger = create_logger(__name__)
 
 
-class TaskRunner(object):
+class BaseTaskRunner(object):
+    """
+    All task runners implementation must inherit from this base class
+    """
+
+    def execute(self, task_name, **kwargs):
+        raise NotImplementedError
+
+
+class DefaultTaskRunner(BaseTaskRunner):
+    """
+    Specialiazed task runner implementation
+    for finding task in registry or through auto discovery feature
+    and then executes it
+    """
+
     def __init__(self, task_registry, auto_discover=False):
         self.auto_discover = auto_discover
         self.registry = task_registry
 
-    def find_and_execute_task(self, task_name, **kwargs):
+    def execute(self, task_name, **kwargs):
+        """
+        Executes provided task name with provided keyword
+        arguments
+        """
+        return self._find_and_execute_task(task_name, **kwargs)
+
+    def _find_and_execute_task(self, task_name, **kwargs):
         """
         Finds and execute tasks
         """
@@ -33,6 +55,10 @@ class TaskRunner(object):
 
 
 class TaskQueueWorker(object):
+    """
+    Listens and receives tasks and uses a runner to execute it
+    """
+
     def __init__(self, connection, runner):
         self.slaves = []
         self.connection = connection
@@ -41,6 +67,11 @@ class TaskQueueWorker(object):
         self.current_slave = 0
 
     def start(self):
+        """
+        Establishes a socket connection which listens for new tasks.
+        Tasks are executed immediately if there are no slave workers available else
+        they are pushed to a slave worker using round robin scheduling.
+        """
         logger.info(f"starting worker on: {self.connection.socket_address}")
         try:
             while True:
@@ -54,7 +85,7 @@ class TaskQueueWorker(object):
                     task_name = message.pop("task")
                     kwargs = message.pop("kwargs")
                     logger.info(f"received task: {task_name}")
-                    self.runner.find_and_execute_task(task_name, **kwargs)
+                    self.runner.execute(task_name, **kwargs)
         except KeyboardInterrupt:
             self.stop()
 
@@ -76,18 +107,38 @@ class TaskQueueWorker(object):
 
 
 class WorkerInitializer(object):
+    """
+    Initializes workers and all its dependencies
+    """
+
     def __init__(self, number_of_slaves=0, auto_discover=False, task_registry=None):
-        self.tasks = task_registry or RegistryFactory.create_registry(
-            RegistryType.in_memory
-        )
-        self.runner = TaskRunner(self.tasks, auto_discover)
+        self.tasks = self._initialize_registry(task_registry)
+        self._runner = None
         self.number_of_slaves = number_of_slaves
+        self.auto_discover = auto_discover
 
     def register_task(self, task):
         """
         Registers tasks to in-memory task registry
         """
         self.tasks.register(task)
+
+    def _initialize_registry(self, task_registry):
+        return task_registry or RegistryFactory.create_registry(RegistryType.in_memory)
+
+    @property
+    def runner(self):
+        return self._runner or DefaultTaskRunner(self.tasks, self.auto_discover)
+
+    @runner.setter
+    def runner(self, custom_runner):
+        if custom_runner:
+            assert issubclass(
+                type(custom_runner), BaseTaskRunner
+            ), "{} must inherit from {}".format(
+                type(custom_runner), str(BaseTaskRunner)
+            )
+        self._runner = custom_runner
 
     def _initialize_workers(self):
         port, host = get_worker_port_and_host()
