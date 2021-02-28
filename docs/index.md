@@ -16,6 +16,7 @@ Zebrok has been tested on a container orchestration platform like k8s and it wor
      - Fast
      - Open source and more
 
-Contribute on github: `https://github.com/kaypee90/zebrok`
 
 Install using the command: `pip install git+https://github.com/kaypee90/zebrok.git#egg=zebrok`
+
+Opened to contributions on Github
