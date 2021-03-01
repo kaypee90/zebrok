@@ -1,5 +1,6 @@
 import inspect
 from abc import ABC, abstractmethod
+from .exceptions import ZebrokNotImplementedError
 
 
 class BaseTaskRegistry(ABC):
@@ -10,12 +11,11 @@ class BaseTaskRegistry(ABC):
 
     @abstractmethod
     def register(self, task):
-        raise NotImplementedError
+        raise ZebrokNotImplementedError
 
     @abstractmethod
     def unregister(self, name):
-        raise NotImplementedError
-
+        raise ZebrokNotImplementedError
 
 class InMemoryTaskRegistry(BaseTaskRegistry, dict):
     """
