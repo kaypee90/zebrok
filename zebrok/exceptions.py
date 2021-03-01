@@ -1,0 +1,3 @@
+
+class ZebrokNotImplementedError(NotImplementedError):
+    pass

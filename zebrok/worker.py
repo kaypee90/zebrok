@@ -4,6 +4,7 @@ from .registry import RegistryType, RegistryFactory
 from .logging import create_logger
 from .discovery import get_discovered_task_by_name
 from .utils import get_worker_port_and_host
+from .exceptions import ZebrokNotImplementedError
 
 logger = create_logger(__name__)
 
@@ -14,7 +15,7 @@ class BaseTaskRunner(object):
     """
 
     def execute(self, task_name, **kwargs):
-        raise NotImplementedError
+        raise ZebrokNotImplementedError
 
 
 class DefaultTaskRunner(BaseTaskRunner):

@@ -1,6 +1,7 @@
 import enum
 import socket
 import zmq
+from .exceptions import ZebrokNotImplementedError
 
 
 class SocketType(enum.Enum):
@@ -36,7 +37,7 @@ class BaseSocketConnection(object):
         self.socket = None
 
     def close(self):
-        raise NotImplementedError
+        raise ZebrokNotImplementedError
 
     def get_socket_address(self):
         return f"tcp://{self.host}:{str(self.port)}"
