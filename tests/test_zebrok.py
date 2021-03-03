@@ -10,7 +10,7 @@ from zebrok.registry import InMemoryTaskRegistry, RegistryFactory, RegistryType
 from zebrok import app
 from zebrok.worker import WorkerInitializer, DefaultTaskRunner, BaseTaskRunner
 from zebrok.logging import create_logger
-from zebrok.discovery import get_discovered_task_by_name
+from zebrok.discovery import get_discovered_task_by_name, discover_tasks
 from zebrok.connection import (
     ConnectionType,
     ConnectionFactory,
@@ -85,6 +85,10 @@ class TestDiscovery(unittest.TestCase):
         func = get_discovered_task_by_name(expected_discovered_task_name)
         actual_discovered_task_name = func.get_task_object().__name__
         self.assertEqual(expected_discovered_task_name, actual_discovered_task_name)
+
+    def test_discover_tasks(self):
+        number_of_tasks = discover_tasks()
+        self.assertEqual(2, number_of_tasks)
 
 
 class TestUtils(unittest.TestCase):
