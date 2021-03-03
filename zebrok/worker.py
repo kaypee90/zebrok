@@ -2,7 +2,7 @@ import concurrent.futures
 from .connection import SocketType, ConnectionType, ConnectionFactory
 from .registry import RegistryType, RegistryFactory
 from .logging import create_logger
-from .discovery import get_discovered_task_by_name
+from .discovery import get_discovered_task_by_name, discover_tasks
 from .utils import get_worker_port_and_host
 from .exceptions import ZebrokNotImplementedError
 
@@ -149,9 +149,17 @@ class WorkerInitializer(object):
             host,
             port,
         )
-        
         master_socket, master_worker = self._create_master_worker(*master_settings)
+        self._initialize_slave_workers(max_workers, host, port, master_socket, master_worker)
 
+    def _create_master_worker(self, *settings):
+        socket = self._create_socket_connection(
+            ConnectionType.zmq_bind, *settings
+        )
+        worker = self._create_task_queue_worker(socket)
+        return socket, worker
+
+    def _initialize_slave_workers(self, max_workers, host, port, master_socket, master_worker):
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
             for i in range(self.number_of_slaves):
                 slave_port = port + i + 1
@@ -177,13 +185,6 @@ class WorkerInitializer(object):
 
             executor.submit(master_worker.start)
 
-    def _create_master_worker(self, *settings):
-        socket = self._create_socket_connection(
-            ConnectionType.zmq_bind, *settings
-        )
-        worker = self._create_task_queue_worker(socket)
-        return socket, worker
-
     def _create_slave_push_connection(self, *settings):
         return self._create_socket_connection(ConnectionType.zmq_bind, *settings)
 
@@ -204,4 +205,6 @@ class WorkerInitializer(object):
         Starts workers to be receiving incoming
         messages
         """
+        if self.auto_discover:
+            discover_tasks()
         self._initialize_workers()
