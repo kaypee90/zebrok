@@ -92,18 +92,30 @@ class TaskQueueWorker(object):
 
     @property
     def number_of_slaves(self):
+        """
+        Number of slave workers initialized
+        """
         return len(self.slaves)
 
     def increment_current_slave(self):
+        """
+        Increase count of initialized slaves
+        """
         self.current_slave += 1
         if self.current_slave == self.number_of_slaves:
             self.current_slave = 0
 
     def stop(self):
+        """
+        Close socket connection
+        """
         self.current_slave = 0
         self.connection.close()
 
     def add_slave(self, worker):
+        """
+        Add a slave worker to a master worker
+        """
         self.slaves.append(worker)
 
 
@@ -125,10 +137,16 @@ class WorkerInitializer(object):
         self.tasks.register(task)
 
     def _initialize_registry(self, task_registry):
+        """
+        Get registry instance to be used by the task runner
+        """
         return task_registry or RegistryFactory.create_registry(RegistryType.in_memory)
 
     @property
     def runner(self):
+        """
+        Get instance of Task Runner to be used for executing received tasks
+        """
         return self._runner or DefaultTaskRunner(self.tasks, self.auto_discover)
 
     @runner.setter
@@ -202,7 +220,8 @@ class WorkerInitializer(object):
 
     def start(self):
         """
-        Starts workers to be receiving incoming
+        Scan for tasks if auto discover is set to True and  
+        start workers to be receiving incoming
         messages
         """
         if self.auto_discover:
