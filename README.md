@@ -49,7 +49,7 @@ long_running_task.run(param="dowork")
      - Fast
      - Open source
 
-# Using a container orchestration technology:
+### Using a container orchestration technology:
 - `number_of_slaves` must always be set to 0 and you can spin a number of replicas for the workers.
 - `WORKER_HOST` env var for a worker must always be `*`
 
