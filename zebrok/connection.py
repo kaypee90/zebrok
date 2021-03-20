@@ -13,33 +13,49 @@ class SocketType(enum.Enum):
     ZmqPush = zmq.PUSH
 
 
-class SocketHost(object):
+def convert_hostname_to_ip(hostname):
     """
-    Resolves hosts to ip addresses
-    """
+    Converts host name to an ip address
 
-    @staticmethod
-    def to_ip(host):
-        return host if host == "*" else socket.gethostbyname(host)
+    Parameters:
+        hostname (str): name of host 
+
+    Returns:
+        str : converted ip address for host
+    """
+    return hostname if hostname == "*" else socket.gethostbyname(host)
 
 
 class BaseSocketConnection(object):
     """
     All connection implementation must inherit from this base class
+
+    socket_type = type of connection created by factory
+    host = name of the host on which connection is being created
+    port = socket connection port
+    socket_address = tcp address for establishing the connection
+    context = current connection context
+    socket =  created socket connectio
     """
 
     def __init__(self, socket_type, host, port, context):
         self.socket_type = socket_type.value
-        self.host = SocketHost.to_ip(host)
+        self.host = convert_hostname_to_ip(host)
         self.port = int(port)
         self.socket_address = self.get_socket_address()
         self.context = context
         self.socket = None
 
     def close(self):
+        """
+        Closes opened underlying socket connection
+        """
         raise ZebrokNotImplementedError
 
     def get_socket_address(self):
+        """
+        Constructs tcp adddress to be connected to
+        """
         return f"tcp://{self.host}:{str(self.port)}"
 
 
@@ -94,6 +110,15 @@ class ConnectionFactory:
 
     @staticmethod
     def create_connection(connection_type, *args):
+        """
+        Creates sockect connections
+
+        parameters:
+            connection_type (str): Type of connection to create
+
+        Returns:
+            BaseSocketConnection : created socket connection
+        """
         connection = globals()[connection_type](*args)
         assert issubclass(
             type(connection), BaseSocketConnection
