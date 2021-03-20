@@ -23,7 +23,7 @@ def convert_hostname_to_ip(hostname):
     Returns:
         str : converted ip address for host
     """
-    return hostname if hostname == "*" else socket.gethostbyname(host)
+    return hostname if hostname == "*" else socket.gethostbyname(hostname)
 
 
 class BaseSocketConnection(object):

@@ -7,6 +7,6 @@ from zebrok.worker import WorkerInitializer
 from tasks import long_running_task_two
 
 
-worker = WorkerInitializer(number_of_slaves=2, auto_discover=True)
+worker = WorkerInitializer(number_of_slaves=0, auto_discover=True)
 worker.register_task(long_running_task_two)
 worker.start()
