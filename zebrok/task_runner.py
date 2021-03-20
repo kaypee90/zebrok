@@ -1,5 +1,8 @@
+from .discovery import get_discovered_task_by_name
+from .logging import create_logger
 from .exceptions import ZebrokNotImplementedError
 
+logger = create_logger(__name__)
 
 class BaseTaskRunner(object):
     """

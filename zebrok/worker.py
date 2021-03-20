@@ -1,9 +1,9 @@
 import concurrent.futures
-from .task_runner import DefaultTaskRunner
+from .task_runner import DefaultTaskRunner, BaseTaskRunner
 from .connection import SocketType, ConnectionType, ConnectionFactory
 from .registry import RegistryType, RegistryFactory
 from .logging import create_logger
-from .discovery import get_discovered_task_by_name, discover_tasks
+from .discovery import discover_tasks
 from .utils import get_worker_port_and_host
 
 
