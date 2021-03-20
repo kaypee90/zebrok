@@ -11,11 +11,24 @@ class BaseTaskRegistry(ABC):
 
     @abstractmethod
     def register(self, task):
+        """
+        Add a new task to the registry
+
+        parameters:
+            task (object): the function to be added to the registry
+        """
         raise ZebrokNotImplementedError
 
     @abstractmethod
     def unregister(self, name):
+        """
+        Remove a task to the registry
+
+        parameters:
+            name (object): name of function to be remove from the registry
+        """
         raise ZebrokNotImplementedError
+
 
 class InMemoryTaskRegistry(BaseTaskRegistry, dict):
     """
@@ -52,6 +65,15 @@ class RegistryFactory:
 
     @staticmethod
     def create_registry(registry_type):
+        """
+        Creates registries
+
+        parameters:
+            registry_type (str): type of registry to create
+
+        Returns:
+            BaseTaskRegistry : created registry
+        """
         registry = globals()[registry_type]()
         assert issubclass(
             type(registry), BaseTaskRegistry

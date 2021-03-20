@@ -8,7 +8,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 from zebrok.utils import get_worker_port_and_host
 from zebrok.registry import InMemoryTaskRegistry, RegistryFactory, RegistryType
 from zebrok import app
-from zebrok.worker import WorkerInitializer, DefaultTaskRunner, BaseTaskRunner
+from zebrok.task_runner import DefaultTaskRunner, BaseTaskRunner
+from zebrok.worker import WorkerInitializer
 from zebrok.logging import create_logger
 from zebrok.discovery import get_discovered_task_by_name, discover_tasks
 from zebrok.connection import (
