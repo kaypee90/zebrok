@@ -4,6 +4,7 @@ from .exceptions import ZebrokNotImplementedError
 
 logger = create_logger(__name__)
 
+
 class BaseTaskRunner(object):
     """
     All task runners implementation must inherit from this base class
