@@ -45,4 +45,3 @@ class DefaultTaskRunner(BaseTaskRunner):
             logger.error("Task not found!")
 
         return task_executed
-

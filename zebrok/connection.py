@@ -18,7 +18,7 @@ def convert_hostname_to_ip(hostname):
     Converts host name to an ip address
 
     Parameters:
-        hostname (str): name of host 
+        hostname (str): name of host
 
     Returns:
         str : converted ip address for host
