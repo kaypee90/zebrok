@@ -1,4 +1,7 @@
 # zebrok
+![App workflow](https://github.com/kaypee90/zebrok/actions/workflows/python-app.yml/badge.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Brokerless task queue for python based on 0Mq
 
 ### - How to use zebrok
