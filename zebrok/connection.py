@@ -55,6 +55,8 @@ class BaseSocketConnection(object):
     def get_socket_address(self):
         """
         Constructs tcp adddress to be connected to
+        :returns:
+            constructed socket address using host and port
         """
         return f"tcp://{self.host}:{str(self.port)}"
 
@@ -65,6 +67,14 @@ class ZmqBindConnection(BaseSocketConnection):
     """
 
     def __init__(self, socket_type, host, port, context=None):
+        """
+        Initializes Zmq Bind connection
+        :params
+            socket_type: string
+            host: string
+            port: int
+            context: object
+        """
         if not context:
             context = zmq.Context()
         super().__init__(socket_type, host, port, context)
@@ -82,6 +92,14 @@ class ZmqConnectTypeConnection(BaseSocketConnection):
     """
 
     def __init__(self, socket_type, host, port, context=None):
+        """
+        Initializes Zmq Connect Type connection
+        :params
+            socket_type: string
+            host: string
+            port: int
+            context: object
+        """
         if not context:
             context = zmq.Context()
         super().__init__(socket_type, host, port, context)
