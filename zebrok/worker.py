@@ -68,14 +68,14 @@ class TaskQueueWorker:
 
     def stop(self):
         """
-        Close socket connection
+        Closes socket connection
         """
         self.current_slave = 0
         self.connection.close()
 
     def add_slave(self, worker):
         """
-        Add a slave worker to a master worker
+        Adds a slave worker to a master worker
         """
         self.slaves.append(worker)
 

@@ -1,11 +1,11 @@
 from .discovery import get_discovered_task_by_name
-from .logging import create_logger
 from .exceptions import ZebrokNotImplementedError
+from .logging import create_logger
 
 logger = create_logger(__name__)
 
 
-class BaseTaskRunner(object):
+class BaseTaskRunner:
     """
     All task runners implementation must inherit from this base class
     """
@@ -17,8 +17,8 @@ class BaseTaskRunner(object):
 class DefaultTaskRunner(BaseTaskRunner):
     """
     Specialiazed task runner implementation
-    for finding task in registry or through auto discovery feature
-    and then executes it
+    for finding task in registry or through
+    auto discovery feature and then executes it
     """
 
     def __init__(self, task_registry, auto_discover=False):
@@ -46,6 +46,6 @@ class DefaultTaskRunner(BaseTaskRunner):
             func(**kwargs)
             task_executed = True
         else:
-            logger.error("Task not found!")
+            logger.error('Task not found!')
 
         return task_executed
