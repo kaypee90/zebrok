@@ -33,18 +33,18 @@ class TaskQueueWorker:
         Tasks are executed immediately if there are no slave workers available else
         they are pushed to a slave worker using round robin scheduling.
         """
-        logger.info(f'starting worker on: {self.connection.socket_address}')
+        logger.info(f"starting worker on: {self.connection.socket_address}")
         try:
             while True:
                 message = self.socket.recv_json()
                 if self.number_of_slaves > 0:
-                    logger.info('sending task to slave worker')
+                    logger.info("sending task to slave worker")
                     slave_push_socket = self.get_available_slave()
                     slave_push_socket.send_json(message)
                 else:
-                    task_name = message.pop('task')
-                    kwargs = message.pop('kwargs')
-                    logger.info(f'received task: {task_name}')
+                    task_name = message.pop("task")
+                    kwargs = message.pop("kwargs")
+                    logger.info(f"received task: {task_name}")
                     self.runner.execute(task_name, **kwargs)
         except KeyboardInterrupt:
             self.stop()
@@ -117,9 +117,11 @@ class WorkerInitializer:
         """
         if custom_runner:
             assert issubclass(
-                type(custom_runner), BaseTaskRunner,
-            ), '{} must inherit from {}'.format(
-                type(custom_runner), str(BaseTaskRunner),
+                type(custom_runner),
+                BaseTaskRunner,
+            ), "{} must inherit from {}".format(
+                type(custom_runner),
+                str(BaseTaskRunner),
             )
         self._runner = custom_runner
 
@@ -136,7 +138,11 @@ class WorkerInitializer:
         )
         master_socket, master_worker = self._create_master_worker(*master_settings)
         self._initialize_slave_workers(
-            max_workers, host, port, master_socket, master_worker,
+            max_workers,
+            host,
+            port,
+            master_socket,
+            master_worker,
         )
 
     def _create_master_worker(self, *settings):
@@ -148,7 +154,12 @@ class WorkerInitializer:
         return socket, worker
 
     def _initialize_slave_workers(
-        self, max_workers, host, port, master_socket, master_worker,
+        self,
+        max_workers,
+        host,
+        port,
+        master_socket,
+        master_worker,
     ):
         """
         Creates worker threads as slaves to be associated with the main worker
@@ -189,7 +200,8 @@ class WorkerInitializer:
         Creates a slave task queue worker associated with the master
         """
         pull_connection = self._create_socket_connection(
-            ConnectionType.zmq_connect, *settings,
+            ConnectionType.zmq_connect,
+            *settings,
         )
         return self._create_task_queue_worker(pull_connection)
 

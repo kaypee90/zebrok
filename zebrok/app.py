@@ -17,7 +17,8 @@ class TaskPublisher:
             port,
         )
         self.connection = ConnectionFactory.create_connection(
-            ConnectionType.zmq_connect, *settings,
+            ConnectionType.zmq_connect,
+            *settings,
         )
         self.socket = self.connection.socket
 
@@ -28,7 +29,7 @@ class TaskPublisher:
         self.connection.close()
 
     def publish_task(self, task, *args, **kwargs):
-        payload = {'task': task.__name__, 'kwargs': kwargs}
+        payload = {"task": task.__name__, "kwargs": kwargs}
         self.socket.send_json(payload)
         return True
 

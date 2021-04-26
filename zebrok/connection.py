@@ -25,7 +25,7 @@ def convert_hostname_to_ip(hostname):
     Returns:
         str : converted ip address for host
     """
-    return hostname if hostname == '*' else socket.gethostbyname(hostname)
+    return hostname if hostname == "*" else socket.gethostbyname(hostname)
 
 
 class BaseSocketConnection:
@@ -60,7 +60,7 @@ class BaseSocketConnection:
         Returns:
             (str): constructed socket address using host and port
         """
-        return f'tcp://{self.host}:{str(self.port)}'
+        return f"tcp://{self.host}:{str(self.port)}"
 
 
 class ZmqBindConnection(BaseSocketConnection):
@@ -141,6 +141,7 @@ class ConnectionFactory:
         """
         connection = globals()[connection_type](*args)
         assert issubclass(
-            type(connection), BaseSocketConnection,
-        ), f'{type(connection)} must inherit from {str(BaseSocketConnection)}'
+            type(connection),
+            BaseSocketConnection,
+        ), f"{type(connection)} must inherit from {str(BaseSocketConnection)}"
         return connection

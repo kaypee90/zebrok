@@ -46,6 +46,6 @@ class DefaultTaskRunner(BaseTaskRunner):
             func(**kwargs)
             task_executed = True
         else:
-            logger.error('Task not found!')
+            logger.error("Task not found!")
 
         return task_executed
