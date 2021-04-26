@@ -1,16 +1,21 @@
 import concurrent.futures
-from .task_runner import DefaultTaskRunner, BaseTaskRunner
-from .connection import SocketType, ConnectionType, ConnectionFactory
-from .registry import RegistryType, RegistryFactory
-from .logging import create_logger
+
+from .connection import ConnectionFactory
+from .connection import ConnectionType
+from .connection import SocketType
 from .discovery import discover_tasks
+from .logging import create_logger
+from .registry import RegistryFactory
+from .registry import RegistryType
+from .task_runner import BaseTaskRunner
+from .task_runner import DefaultTaskRunner
 from .utils import get_worker_port_and_host
 
 
 logger = create_logger(__name__)
 
 
-class TaskQueueWorker(object):
+class TaskQueueWorker:
     """
     Listens and receives tasks and uses a task runner to execute them
     """
@@ -28,18 +33,18 @@ class TaskQueueWorker(object):
         Tasks are executed immediately if there are no slave workers available else
         they are pushed to a slave worker using round robin scheduling.
         """
-        logger.info(f"starting worker on: {self.connection.socket_address}")
+        logger.info(f'starting worker on: {self.connection.socket_address}')
         try:
             while True:
                 message = self.socket.recv_json()
                 if self.number_of_slaves > 0:
-                    logger.info("sending task to slave worker")
+                    logger.info('sending task to slave worker')
                     slave_push_socket = self.get_available_slave()
                     slave_push_socket.send_json(message)
                 else:
-                    task_name = message.pop("task")
-                    kwargs = message.pop("kwargs")
-                    logger.info(f"received task: {task_name}")
+                    task_name = message.pop('task')
+                    kwargs = message.pop('kwargs')
+                    logger.info(f'received task: {task_name}')
                     self.runner.execute(task_name, **kwargs)
         except KeyboardInterrupt:
             self.stop()
@@ -75,7 +80,7 @@ class TaskQueueWorker(object):
         self.slaves.append(worker)
 
 
-class WorkerInitializer(object):
+class WorkerInitializer:
     """
     Initializes workers and all its dependencies
     """
@@ -112,9 +117,9 @@ class WorkerInitializer(object):
         """
         if custom_runner:
             assert issubclass(
-                type(custom_runner), BaseTaskRunner
-            ), "{} must inherit from {}".format(
-                type(custom_runner), str(BaseTaskRunner)
+                type(custom_runner), BaseTaskRunner,
+            ), '{} must inherit from {}'.format(
+                type(custom_runner), str(BaseTaskRunner),
             )
         self._runner = custom_runner
 
@@ -131,7 +136,7 @@ class WorkerInitializer(object):
         )
         master_socket, master_worker = self._create_master_worker(*master_settings)
         self._initialize_slave_workers(
-            max_workers, host, port, master_socket, master_worker
+            max_workers, host, port, master_socket, master_worker,
         )
 
     def _create_master_worker(self, *settings):
@@ -143,7 +148,7 @@ class WorkerInitializer(object):
         return socket, worker
 
     def _initialize_slave_workers(
-        self, max_workers, host, port, master_socket, master_worker
+        self, max_workers, host, port, master_socket, master_worker,
     ):
         """
         Creates worker threads as slaves to be associated with the main worker
@@ -159,7 +164,7 @@ class WorkerInitializer(object):
                     master_socket.context,
                 )
                 push_connection = self._create_slave_push_connection(
-                    *push_slave_settings
+                    *push_slave_settings,
                 )
                 master_worker.add_slave(push_connection.socket)
 
@@ -184,7 +189,7 @@ class WorkerInitializer(object):
         Creates a slave task queue worker associated with the master
         """
         pull_connection = self._create_socket_connection(
-            ConnectionType.zmq_connect, *settings
+            ConnectionType.zmq_connect, *settings,
         )
         return self._create_task_queue_worker(pull_connection)
 
@@ -203,8 +208,7 @@ class WorkerInitializer(object):
     def start(self):
         """
         Scan for tasks if auto discover is set to True and
-        start workers to be receiving incoming
-        messages
+        start workers to be receiving incoming messages
         """
         if self.auto_discover:
             discover_tasks()
