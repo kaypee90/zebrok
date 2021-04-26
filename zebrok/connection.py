@@ -1,6 +1,8 @@
 import enum
 import socket
+
 import zmq
+
 from .exceptions import ZebrokNotImplementedError
 
 
@@ -26,7 +28,7 @@ def convert_hostname_to_ip(hostname):
     return hostname if hostname == "*" else socket.gethostbyname(hostname)
 
 
-class BaseSocketConnection(object):
+class BaseSocketConnection:
     """
     All connection implementation must inherit from this base class
 
@@ -55,8 +57,8 @@ class BaseSocketConnection(object):
     def get_socket_address(self):
         """
         Constructs tcp adddress to be connected to
-        :returns:
-            constructed socket address using host and port
+        Returns:
+            (str): constructed socket address using host and port
         """
         return f"tcp://{self.host}:{str(self.port)}"
 
@@ -69,11 +71,11 @@ class ZmqBindConnection(BaseSocketConnection):
     def __init__(self, socket_type, host, port, context=None):
         """
         Initializes Zmq Bind connection
-        :params
-            socket_type: string
-            host: string
-            port: int
-            context: object
+        parameters:
+            socket_type (str): type of socket to initialize
+            host (str): The host ip to use
+            port (int): Port number to connect or listen on
+            context (object): Zmq specific contexte object
         """
         if not context:
             context = zmq.Context()
@@ -94,11 +96,11 @@ class ZmqConnectTypeConnection(BaseSocketConnection):
     def __init__(self, socket_type, host, port, context=None):
         """
         Initializes Zmq Connect Type connection
-        :params
-            socket_type: string
-            host: string
-            port: int
-            context: object
+        parameters:
+            socket_type (str): type of socket to initialize
+            host (str): The host ip to use
+            port (int): Port number to connect or listen on
+            context (object): Zmq specific contexte object
         """
         if not context:
             context = zmq.Context()
@@ -139,6 +141,7 @@ class ConnectionFactory:
         """
         connection = globals()[connection_type](*args)
         assert issubclass(
-            type(connection), BaseSocketConnection
-        ), "{} must inherit from {}".format(type(connection), str(BaseSocketConnection))
+            type(connection),
+            BaseSocketConnection,
+        ), f"{type(connection)} must inherit from {str(BaseSocketConnection)}"
         return connection
