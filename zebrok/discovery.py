@@ -1,11 +1,15 @@
 import importlib
-from zebrok.logging import create_logger
+
 from zebrok.config import TASK_TYPE
+from zebrok.logging import create_logger
 
 logger = create_logger(__name__)
 
 
 def get_import_module():
+    """
+    Used for dynamic import of tasks
+    """
     return importlib.import_module("tasks", package="zebrok")
 
 

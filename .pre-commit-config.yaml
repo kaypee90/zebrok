@@ -10,7 +10,6 @@ repos:
     -   id: check-json
     -   id: debug-statements
     -   id: requirements-txt-fixer
-    -   id: double-quote-string-fixer
 -   repo: https://github.com/asottile/reorder_python_imports
     rev: v2.4.0
     hooks:

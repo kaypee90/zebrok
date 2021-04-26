@@ -1,8 +1,10 @@
-from .connection import SocketType, ConnectionType, ConnectionFactory
+from .connection import ConnectionFactory
+from .connection import ConnectionType
+from .connection import SocketType
 from .utils import get_worker_port_and_host
 
 
-class TaskPublisher(object):
+class TaskPublisher:
     """
     Handles pushing of tasks to task queue
     """
@@ -15,7 +17,8 @@ class TaskPublisher(object):
             port,
         )
         self.connection = ConnectionFactory.create_connection(
-            ConnectionType.zmq_connect, *settings
+            ConnectionType.zmq_connect,
+            *settings,
         )
         self.socket = self.connection.socket
 
@@ -31,9 +34,9 @@ class TaskPublisher(object):
         return True
 
 
-class Task(object):
+class Task:
     """
-    Extends methods to be used with task queue
+    Extends the methods to be used with task queue
     """
 
     def __init__(self, arg):
