@@ -14,6 +14,11 @@ repos:
     hooks:
     -   id: reorder-python-imports
         args: [--application-directories, '.:zebrok', --py36-plus]
+-   repo: https://github.com/asottile/add-trailing-comma
+    rev: v2.1.0
+    hooks:
+    -   id: add-trailing-comma
+        args: [--py36-plus]
 -   repo: https://github.com/asottile/pyupgrade
     rev: v2.12.0
     hooks:
