@@ -1,5 +1,7 @@
 import inspect
-from abc import ABC, abstractmethod
+from abc import ABC
+from abc import abstractmethod
+
 from .exceptions import ZebrokNotImplementedError
 
 
@@ -46,7 +48,7 @@ class InMemoryTaskRegistry(BaseTaskRegistry, dict):
         """
         Removes a task to in-memory registry
         """
-        self.pop(getattr(name, "name", name))
+        self.pop(getattr(name, 'name', name))
 
 
 class RegistryType:
@@ -72,10 +74,10 @@ class RegistryFactory:
             registry_type (str): type of registry to create
 
         Returns:
-            BaseTaskRegistry : created registry
+            BaseTaskRegistry : created registry object
         """
         registry = globals()[registry_type]()
         assert issubclass(
-            type(registry), BaseTaskRegistry
-        ), "{} must inherit from {}".format(type(registry), str(BaseTaskRegistry))
+            type(registry), BaseTaskRegistry,
+        ), f'{type(registry)} must inherit from {str(BaseTaskRegistry)}'
         return registry
