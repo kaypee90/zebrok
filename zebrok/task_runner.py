@@ -1,3 +1,6 @@
+from abc import ABC
+from abc import abstractmethod
+
 from .discovery import get_discovered_task_by_name
 from .exceptions import ZebrokNotImplementedError
 from .logging import create_logger
@@ -5,12 +8,19 @@ from .logging import create_logger
 logger = create_logger(__name__)
 
 
-class BaseTaskRunner:
+class BaseTaskRunner(ABC):
     """
     All task runners implementation must inherit from this base class
     """
 
+    @abstractmethod
     def execute(self, task_name, **kwargs):
+        """
+        Abstract method for executing tasks
+
+        Parameters:
+            task_name (str): Name of task
+        """
         raise ZebrokNotImplementedError
 
 
