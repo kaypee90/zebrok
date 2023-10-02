@@ -7,7 +7,7 @@ Brokerless task queue for python based on 0Mq
 ### - How to use zebrok
 ========================
 
-* Configuring Env Vars:
+* Configuring Environment Variables:
     - WORKER_HOST=
     - WORKER_PORT=
 
@@ -53,6 +53,6 @@ long_running_task.run(param="dowork")
      - Open source
 
 ### Using a container orchestration technology:
-- `number_of_slaves` must always be set to 0 and you can spin a number of replicas for the workers.
-- `WORKER_HOST` env var for a worker must always be `*`
+- `number_of_slaves` must always be set to 0, then you can spin a number of replicas for the workers.
+- `WORKER_HOST`Environment variable for a worker must always be `*`
 
