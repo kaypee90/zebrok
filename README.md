@@ -4,6 +4,13 @@
 
 Brokerless task queue for python based on 0Mq
 
+- This library comes with the benefits of 0Mq
+     - Low Latency
+     - Lightweight
+     - No broker required
+     - Fast
+     - Open source
+
 
 ### Running Zebrok examples with docker compose
 * First clone the repository using the command `git clone git@github.com:kaypee90/zebrok.git`
@@ -91,13 +98,6 @@ long_running_task.run(param="dowork")
 ```
 
 [Link to sample fastapi project using Zebrok](https://github.com/kaypee90/sample-zebrok-1)
-
-- This library comes with the benefits of 0Mq
-     - Low Latency
-     - Lightweight
-     - No broker required
-     - Fast
-     - Open source
 
 
 ### Using a container orchestration technology (like Kubernetes):
