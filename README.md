@@ -53,7 +53,7 @@ DONE!!!
 * Install zebrok using the command `pip install git+https://github.com/kaypee90/zebrok.git#egg=zebrok`
 
 * Configuring Environment Variables:
-    - WORKER_HOST  &#160; &#160; &#160; &#160; # The IP address to expose running workers on
+    - WORKER_HOST  &#160; &#160; &#160; &#160; # The IP address for running workers on
     - WORKER_PORT   &#160; &#160; &#160; &#160; &#160; &#160;  &#160;  # The port number workers should listen on
 
     -- `If not set defaults to localhost:5690`
