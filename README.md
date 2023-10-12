@@ -53,12 +53,12 @@ DONE!!!
 * Install zebrok using the command `pip install git+https://github.com/kaypee90/zebrok.git#egg=zebrok`
 
 * Configuring Environment Variables:
-    - WORKER_HOST  &#160; &#160; &#160; &#160; # The IP address for running workers on
+    - WORKER_HOST  &#160; &#160; &#160; &#160; # The IP address for running workers
     - WORKER_PORT   &#160; &#160; &#160; &#160; &#160; &#160;  &#160;  # The port number workers should listen on
 
     -- `If not set defaults to localhost:5690`
 
-* Creating A Task [tasks.py]
+* Creating A Task `[tasks.py]`
 ```
 from zebrok import app
 
@@ -67,7 +67,7 @@ def long_running_task(param):
     do_some_time_consuming_task(param)
 ```
 
-* Configuring a worker and registering the task [examples/start.py]
+* Configuring a worker and registering the task `[examples/start.py]`
     - NB: `A task can also be discovered automatically if placed in a tasks.py file in the root folder of the project.`
     `- You can also set number of slave worker threads to be running by passing number_of_slaves argument`
 ```
@@ -83,7 +83,7 @@ worker.start()
 * Starting the Zebrok Worker to listen for tasks -
 `python examples/start.py` where start.py is the file in which you configured the worker
 
-* Executing a task [examples/client.py]
+* Executing a task `[examples/client.py]`
 ```
 from tasks import long_running_task
 
