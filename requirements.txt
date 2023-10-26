@@ -1,2 +1,2 @@
-pyzmq
+pyzmq==25.1.1
 -r requirements-documentation.txt
