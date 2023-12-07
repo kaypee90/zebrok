@@ -1,5 +1,6 @@
 import enum
 import socket
+from typing import Any, Tuple
 
 import zmq
 
@@ -15,7 +16,7 @@ class SocketType(enum.Enum):
     ZmqPush = zmq.PUSH
 
 
-def convert_hostname_to_ip(hostname):
+def convert_hostname_to_ip(hostname: str) -> str:
     """
     Converts host name to an ip address
 
@@ -40,21 +41,21 @@ class BaseSocketConnection:
     socket =  created socket connectio
     """
 
-    def __init__(self, socket_type, host, port, context):
+    def __init__(self, socket_type: Any, host: str, port: str, context: Any) -> None:
         self.socket_type = socket_type.value
         self.host = convert_hostname_to_ip(host)
         self.port = int(port)
         self.socket_address = self.get_socket_address()
         self.context = context
-        self.socket = None
+        self.socket: Any = None
 
-    def close(self):
+    def close(self) -> None:
         """
         Closes opened underlying socket connection
         """
         raise ZebrokNotImplementedError
 
-    def get_socket_address(self):
+    def get_socket_address(self) -> str:
         """
         Constructs tcp adddress to be connected to
         Returns:
@@ -68,7 +69,7 @@ class ZmqBindConnection(BaseSocketConnection):
     Specialized 0mq socket binding implementation
     """
 
-    def __init__(self, socket_type, host, port, context=None):
+    def __init__(self, socket_type: Any, host: str, port: str, context: Any = None) -> None:
         """
         Initializes Zmq Bind connection
         parameters:
@@ -83,7 +84,7 @@ class ZmqBindConnection(BaseSocketConnection):
         self.socket = self.context.socket(self.socket_type)
         self.socket.bind(self.socket_address)
 
-    def close(self):
+    def close(self) -> None:
         self.socket.close()
         self.context.term()
 
@@ -93,7 +94,7 @@ class ZmqConnectTypeConnection(BaseSocketConnection):
     Specialized 0mq socket connection implementation
     """
 
-    def __init__(self, socket_type, host, port, context=None):
+    def __init__(self, socket_type: Any, host: str, port: str, context: Any = None) -> None:
         """
         Initializes Zmq Connect Type connection
         parameters:
@@ -108,7 +109,7 @@ class ZmqConnectTypeConnection(BaseSocketConnection):
         self.socket = self.context.socket(self.socket_type)
         self.socket.connect(self.socket_address)
 
-    def close(self):
+    def close(self) -> None:
         self.socket.close()
         self.context.term()
 
@@ -129,7 +130,7 @@ class ConnectionFactory:
     """
 
     @staticmethod
-    def create_connection(connection_type, *args):
+    def create_connection(connection_type: str, *args: Tuple):
         """
         Creates sockect connections
 
