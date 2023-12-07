@@ -1,14 +1,17 @@
 import concurrent.futures
-from typing import Tuple, List, Any
+from typing import Any
+from typing import List
+from typing import Optional
+from typing import Tuple
 
+from .connection import BaseSocketConnection
 from .connection import ConnectionFactory
 from .connection import ConnectionType
 from .connection import SocketType
-from .connection import BaseSocketConnection
 from .discovery import discover_tasks
 from .logging import create_logger
-from .registry import RegistryFactory
 from .registry import BaseTaskRegistry
+from .registry import RegistryFactory
 from .registry import RegistryType
 from .task_runner import BaseTaskRunner
 from .task_runner import DefaultTaskRunner
@@ -92,10 +95,10 @@ class WorkerInitializer:
         self,
         number_of_slaves: int = 0,
         auto_discover: bool = False,
-        task_registry: BaseTaskRegistry | None = None,
+        task_registry: Optional[BaseTaskRegistry] = None,
     ) -> None:
         self.tasks = self._initialize_registry(task_registry)
-        self._runner: BaseTaskRunner | None = None
+        self._runner: Optional[BaseTaskRunner] = None
         self.number_of_slaves = number_of_slaves
         self.auto_discover = auto_discover
 
@@ -105,7 +108,10 @@ class WorkerInitializer:
         """
         self.tasks.register(task)
 
-    def _initialize_registry(self, task_registry: BaseTaskRegistry | None) -> BaseTaskRegistry:
+    def _initialize_registry(
+        self,
+        task_registry: Optional[BaseTaskRegistry],
+    ) -> BaseTaskRegistry:
         """
         Get registry instance to be used by the task runner
         """
@@ -119,7 +125,7 @@ class WorkerInitializer:
         return self._runner or DefaultTaskRunner(self.tasks, self.auto_discover)
 
     @runner.setter
-    def runner(self, custom_runner: BaseTaskRunner | None) -> None:
+    def runner(self, custom_runner: Optional[BaseTaskRunner]) -> None:
         """
         Sets a custom task runner to be used by workers
         """
@@ -213,13 +219,20 @@ class WorkerInitializer:
         )
         return self._create_task_queue_worker(pull_connection)
 
-    def _create_socket_connection(self, connection_type: str, *settings: Tuple) -> BaseSocketConnection:
+    def _create_socket_connection(
+        self,
+        connection_type: str,
+        *settings: Tuple,
+    ) -> BaseSocketConnection:
         """
         Creates socket connections using the Connection Factory
         """
         return ConnectionFactory.create_connection(connection_type, *settings)
 
-    def _create_task_queue_worker(self, connection: BaseSocketConnection) -> TaskQueueWorker:
+    def _create_task_queue_worker(
+        self,
+        connection: BaseSocketConnection,
+    ) -> TaskQueueWorker:
         """
         Creates a new task queue
         """
