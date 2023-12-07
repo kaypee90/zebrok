@@ -1,11 +1,14 @@
 import concurrent.futures
+from typing import Tuple, List, Any
 
 from .connection import ConnectionFactory
 from .connection import ConnectionType
 from .connection import SocketType
+from .connection import BaseSocketConnection
 from .discovery import discover_tasks
 from .logging import create_logger
 from .registry import RegistryFactory
+from .registry import BaseTaskRegistry
 from .registry import RegistryType
 from .task_runner import BaseTaskRunner
 from .task_runner import DefaultTaskRunner
@@ -20,14 +23,14 @@ class TaskQueueWorker:
     Listens and receives tasks and uses a task runner to execute them
     """
 
-    def __init__(self, connection, runner):
-        self.slaves = []
+    def __init__(self, connection, runner) -> None:
+        self.slaves: List[Any] = []
         self.connection = connection
         self.socket = self.connection.socket
         self.runner = runner
         self.current_slave = 0
 
-    def start(self):
+    def start(self) -> None:
         """
         Establishes a socket connection which listens for new tasks.
         Tasks are executed immediately if there are no slave workers available else
@@ -50,13 +53,13 @@ class TaskQueueWorker:
             self.stop()
 
     @property
-    def number_of_slaves(self):
+    def number_of_slaves(self) -> int:
         """
         Number of slave workers initialized
         """
         return len(self.slaves)
 
-    def get_available_slave(self):
+    def get_available_slave(self) -> Any:
         """
         Uses round robin to cycle through and return available slave worker
         """
@@ -66,14 +69,14 @@ class TaskQueueWorker:
             self.current_slave = 0
         return slave_push_socket
 
-    def stop(self):
+    def stop(self) -> None:
         """
         Closes socket connection
         """
         self.current_slave = 0
         self.connection.close()
 
-    def add_slave(self, worker):
+    def add_slave(self, worker) -> None:
         """
         Adds a slave worker to a master worker
         """
@@ -85,33 +88,38 @@ class WorkerInitializer:
     Initializes workers and all its dependencies
     """
 
-    def __init__(self, number_of_slaves=0, auto_discover=False, task_registry=None):
+    def __init__(
+        self,
+        number_of_slaves: int = 0,
+        auto_discover: bool = False,
+        task_registry: BaseTaskRegistry | None = None,
+    ) -> None:
         self.tasks = self._initialize_registry(task_registry)
-        self._runner = None
+        self._runner: BaseTaskRunner | None = None
         self.number_of_slaves = number_of_slaves
         self.auto_discover = auto_discover
 
-    def register_task(self, task):
+    def register_task(self, task: Any) -> None:
         """
         Registers tasks to in-memory task registry
         """
         self.tasks.register(task)
 
-    def _initialize_registry(self, task_registry):
+    def _initialize_registry(self, task_registry: BaseTaskRegistry | None) -> BaseTaskRegistry:
         """
         Get registry instance to be used by the task runner
         """
         return task_registry or RegistryFactory.create_registry(RegistryType.in_memory)
 
     @property
-    def runner(self):
+    def runner(self) -> BaseTaskRunner:
         """
         Get instance of Task Runner to be used for executing received tasks
         """
         return self._runner or DefaultTaskRunner(self.tasks, self.auto_discover)
 
     @runner.setter
-    def runner(self, custom_runner):
+    def runner(self, custom_runner: BaseTaskRunner | None) -> None:
         """
         Sets a custom task runner to be used by workers
         """
@@ -125,7 +133,7 @@ class WorkerInitializer:
             )
         self._runner = custom_runner
 
-    def _initialize_workers(self):
+    def _initialize_workers(self) -> None:
         """
         Initializes master and slave workers
         """
@@ -145,7 +153,7 @@ class WorkerInitializer:
             master_worker,
         )
 
-    def _create_master_worker(self, *settings):
+    def _create_master_worker(self, *settings: Any):
         """
         Creates the main worker
         """
@@ -155,12 +163,12 @@ class WorkerInitializer:
 
     def _initialize_slave_workers(
         self,
-        max_workers,
-        host,
-        port,
-        master_socket,
-        master_worker,
-    ):
+        max_workers: int,
+        host: str,
+        port: int,
+        master_socket: Any,
+        master_worker: Any,
+    ) -> None:
         """
         Creates worker threads as slaves to be associated with the main worker
         """
@@ -189,13 +197,13 @@ class WorkerInitializer:
 
             executor.submit(master_worker.start)
 
-    def _create_slave_push_connection(self, *settings):
+    def _create_slave_push_connection(self, *settings: Any) -> BaseSocketConnection:
         """
         Creates push connection type for sending tasks to slaves
         """
         return self._create_socket_connection(ConnectionType.zmq_bind, *settings)
 
-    def _create_slave_worker(self, *settings):
+    def _create_slave_worker(self, *settings: Any) -> TaskQueueWorker:
         """
         Creates a slave task queue worker associated with the master
         """
@@ -205,19 +213,19 @@ class WorkerInitializer:
         )
         return self._create_task_queue_worker(pull_connection)
 
-    def _create_socket_connection(self, connection_type, *settings):
+    def _create_socket_connection(self, connection_type: str, *settings: Tuple) -> BaseSocketConnection:
         """
         Creates socket connections using the Connection Factory
         """
         return ConnectionFactory.create_connection(connection_type, *settings)
 
-    def _create_task_queue_worker(self, connection):
+    def _create_task_queue_worker(self, connection: BaseSocketConnection) -> TaskQueueWorker:
         """
         Creates a new task queue
         """
         return TaskQueueWorker(connection, self.runner)
 
-    def start(self):
+    def start(self) -> None:
         """
         Scan for tasks if auto discover is set to True and
         start workers to be receiving incoming messages

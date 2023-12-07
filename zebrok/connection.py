@@ -134,7 +134,7 @@ class ConnectionFactory:
     """
 
     @staticmethod
-    def create_connection(connection_type: str, *args: Any):
+    def create_connection(connection_type: str, *args: Any) -> BaseSocketConnection:
         """
         Creates sockect connections
 
