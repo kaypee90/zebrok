@@ -69,7 +69,9 @@ class ZmqBindConnection(BaseSocketConnection):
     Specialized 0mq socket binding implementation
     """
 
-    def __init__(self, socket_type: Any, host: str, port: str, context: Any = None) -> None:
+    def __init__(
+        self, socket_type: Any, host: str, port: str, context: Any = None
+    ) -> None:
         """
         Initializes Zmq Bind connection
         parameters:
@@ -94,7 +96,9 @@ class ZmqConnectTypeConnection(BaseSocketConnection):
     Specialized 0mq socket connection implementation
     """
 
-    def __init__(self, socket_type: Any, host: str, port: str, context: Any = None) -> None:
+    def __init__(
+        self, socket_type: Any, host: str, port: str, context: Any = None
+    ) -> None:
         """
         Initializes Zmq Connect Type connection
         parameters:

@@ -5,6 +5,8 @@ from .discovery import get_discovered_task_by_name
 from .exceptions import ZebrokNotImplementedError
 from .logging import create_logger
 
+from typing import Dict
+
 logger = create_logger(__name__)
 
 
@@ -14,7 +16,7 @@ class BaseTaskRunner(ABC):
     """
 
     @abstractmethod
-    def execute(self, task_name, **kwargs):
+    def execute(self, task_name: str, **kwargs: Dict) -> bool:
         """
         Abstract method for executing tasks
 
@@ -31,18 +33,18 @@ class DefaultTaskRunner(BaseTaskRunner):
     auto discovery feature and then executes it
     """
 
-    def __init__(self, task_registry, auto_discover=False):
+    def __init__(self, task_registry, auto_discover=False) -> None:
         self.auto_discover = auto_discover
         self.registry = task_registry
 
-    def execute(self, task_name, **kwargs):
+    def execute(self, task_name: str, **kwargs: Dict) -> bool:
         """
         Executes provided task name with provided keyword
         arguments
         """
         return self._find_and_execute_task(task_name, **kwargs)
 
-    def _find_and_execute_task(self, task_name, **kwargs):
+    def _find_and_execute_task(self, task_name: str, **kwargs: Dict) -> bool:
         """
         Finds and execute tasks
         """
