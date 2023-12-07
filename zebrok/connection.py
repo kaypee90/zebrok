@@ -130,7 +130,7 @@ class ConnectionFactory:
     """
 
     @staticmethod
-    def create_connection(connection_type: str, *args: Tuple):
+    def create_connection(connection_type: str, *args: Any):
         """
         Creates sockect connections
 
