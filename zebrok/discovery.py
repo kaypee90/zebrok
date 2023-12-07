@@ -1,5 +1,7 @@
 import importlib
 from typing import Any
+from typing import Callable
+from typing import Optional
 
 from zebrok.config import TASK_TYPE
 from zebrok.logging import create_logger
@@ -14,7 +16,7 @@ def get_import_module() -> Any:
     return importlib.import_module("tasks", package="zebrok")
 
 
-def get_discovered_task_by_name(task_name: str) -> Any:
+def get_discovered_task_by_name(task_name: str) -> Optional[Callable[..., Any]]:
     """
     Finds declared tasks
     """
