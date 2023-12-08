@@ -1,7 +1,7 @@
 import logging
 
 
-def create_logger(module_name):
+def create_logger(module_name: str) -> logging.Logger:
     """
     Initializes a new logger object
     parameters:

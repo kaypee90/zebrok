@@ -1,7 +1,7 @@
 import inspect
-from abc import ABC
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
+from .app import Task
 from .exceptions import ZebrokNotImplementedError
 
 
@@ -12,7 +12,7 @@ class BaseTaskRegistry(ABC):
     """
 
     @abstractmethod
-    def register(self, task):
+    def register(self, task: Task) -> None:
         """
         Add a new task to the registry
 
@@ -22,7 +22,7 @@ class BaseTaskRegistry(ABC):
         raise ZebrokNotImplementedError
 
     @abstractmethod
-    def unregister(self, name):
+    def unregister(self, name: str) -> None:
         """
         Remove a task to the registry
 
@@ -37,14 +37,14 @@ class InMemoryTaskRegistry(BaseTaskRegistry, dict):
     In-memory implementation of Task registry
     """
 
-    def register(self, task):
+    def register(self, task: Task) -> None:
         """
         Adds a task to in-memory registry
         """
         task = inspect.isclass(task) and task() or task
         self[task.get_task_object().__name__] = task
 
-    def unregister(self, name):
+    def unregister(self, name: str) -> None:
         """
         Removes a task to in-memory registry
         """
@@ -57,7 +57,7 @@ class RegistryType:
     type of registry to create
     """
 
-    in_memory = InMemoryTaskRegistry.__name__
+    in_memory: str = InMemoryTaskRegistry.__name__
 
 
 class RegistryFactory:
@@ -66,7 +66,7 @@ class RegistryFactory:
     """
 
     @staticmethod
-    def create_registry(registry_type):
+    def create_registry(registry_type) -> BaseTaskRegistry:
         """
         Creates registries
 
