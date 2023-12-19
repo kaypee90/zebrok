@@ -2,11 +2,12 @@
 A sample tasks.py file showing how tasks can be created for zebrok
 """
 import time
+
 from zebrok import app
 
 
 @app.Task
-def long_running_task_one(firstname, lastname):
+def long_running_task_one(firstname: str, lastname: str):
     """
     An example task to emulate a long running task
     """
@@ -17,7 +18,7 @@ def long_running_task_one(firstname, lastname):
 
 
 @app.Task
-def long_running_task_two(email):
+def long_running_task_two(email: str) -> None:
     """
     An example task to emulate a long running task
     """
