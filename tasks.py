@@ -7,7 +7,7 @@ from zebrok import app
 
 
 @app.Task
-def long_running_task_one(firstname: str, lastname: str):
+def long_running_task_one(firstname: str, lastname: str) -> None:
     """
     An example task to emulate a long running task
     """
