@@ -4,18 +4,18 @@
 
 Brokerless task queue for python based on 0Mq
 
-- This library comes with the benefits of 0Mq
-     - Low Latency
-     - Lightweight
-     - No broker required
+- This benefits of libraty of 0Mq
      - Fast
+     - Lightweight
      - Open source
+     - Low Latency
+     - No broker required
 
 
 ### Running Zebrok examples with docker compose
-* First clone the repository using the command `git clone git@github.com:kaypee90/zebrok.git`
+* First clone the repository, use the command `git clone git@github.com:kaypee90/zebrok.git`
 * Change directory into the zebrok directory and run `docker compose up` command to start the worker and publisher containers.
-* Access the shell for the **worker** container and run the command `python examples/start.py` to start the workers.
+* Access the shell for the **worker** container and `run` the command `python examples/start.py` to start the workers.
 * From a different terminal window, access the shell for the running **publisher** container and run the command `python examples/client.py` to queue 2 jobs to be processed.
 * Once these commands are executed you should see 2 tasks processed successfully in the publisher terminal.
 
@@ -57,7 +57,7 @@ DONE!!!
 ### - Trying out zebrok
 ========================
 
-* Install zebrok using the command `pip install git+https://github.com/kaypee90/zebrok.git#egg=zebrok`
+* To `install` zebrok use the command `pip install git+https://github.com/kaypee90/zebrok.git#egg=zebrok`
 
 * Configuring Environment Variables:
     - WORKER_HOST  &#160; &#160; &#160; &#160; # The IP address for running workers
@@ -87,8 +87,8 @@ worker.register_task(long_running_task)
 worker.start()
 ```
 
-* Starting the Zebrok Worker to listen for tasks -
-`python examples/start.py` where start.py is the file in which you configured the worker
+* Starting the Zebrok Worker to listen for tasks -`python examples/start.py` 
+  where **start.py** is the file in which you configured the worker
 
 * Executing a task `[examples/client.py]`
 ```
