@@ -20,11 +20,6 @@ repos:
     hooks:
     -   id: add-trailing-comma
         args: [--py36-plus]
--   repo: https://github.com/asottile/pyupgrade
-    rev: v2.12.0
-    hooks:
-    -   id: pyupgrade
-        args: [--py36-plus]
 - repo: https://github.com/astral-sh/ruff-pre-commit
   rev: v0.4.2
   hooks:
