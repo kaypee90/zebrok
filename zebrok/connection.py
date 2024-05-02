@@ -1,6 +1,6 @@
 import enum
 import socket
-from typing import Any, Tuple
+from typing import Any
 
 import zmq
 
@@ -70,7 +70,11 @@ class ZmqBindConnection(BaseSocketConnection):
     """
 
     def __init__(
-        self, socket_type: Any, host: str, port: str, context: Any = None
+        self,
+        socket_type: Any,
+        host: str,
+        port: str,
+        context: Any = None,
     ) -> None:
         """
         Initializes Zmq Bind connection
@@ -97,7 +101,11 @@ class ZmqConnectTypeConnection(BaseSocketConnection):
     """
 
     def __init__(
-        self, socket_type: Any, host: str, port: str, context: Any = None
+        self,
+        socket_type: Any,
+        host: str,
+        port: str,
+        context: Any = None,
     ) -> None:
         """
         Initializes Zmq Connect Type connection
