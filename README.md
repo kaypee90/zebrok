@@ -2,25 +2,53 @@
 ![App workflow](https://github.com/kaypee90/zebrok/actions/workflows/python-app.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Brokerless task queue for python based on 0Mq
+**Brokerless task queue for Python based on ZeroMQ**
 
-- This benefits of libraty of 0Mq
-     - Fast
-     - Lightweight
-     - Open source
-     - Low Latency
-     - No broker required
+## Key Benefits of Using ZeroMQ
+- **Fast:** High-performance messaging library.
+- **Lightweight:** Minimal resource usage.
+- **Open Source:** Free to use and modify.
+- **Low Latency:** Efficient message passing.
+- **No Broker Required:** Direct communication between endpoints.
 
+## Running Zebrok Examples with Docker Compose
+1. **Clone the repository:**  
+   ```sh
+   git clone git@github.com:kaypee90/zebrok.git
+   ```
 
-### Running Zebrok examples with docker compose
-* First clone the repository, use the command `git clone git@github.com:kaypee90/zebrok.git`
-* Change directory into the zebrok directory and run `docker compose up` command to start the worker and publisher containers.
-* Access the shell for the **worker** container and `run` the command `python examples/start.py` to start the workers.
-* From a different terminal window, access the shell for the running **publisher** container and run the command `python examples/client.py` to queue 2 jobs to be processed.
-* Once these commands are executed you should see 2 tasks processed successfully in the publisher terminal.
+2. **Navigate to the Zebrok directory:**  
+   ```sh
+   cd zebrok
+   ```
 
+3. **Start the worker and publisher containers:**  
+   ```sh
+   docker-compose up
+   ```
 
-**Sample output:**
+4. **Start the workers:**
+   * Access the shell for the worker container:
+   ```sh
+   docker exec -it <worker-container-id> /bin/sh
+   ```
+   * Run the start script:
+   ```sh
+   python examples/start.py
+   ```
+
+5. **Queue jobs from the publisher:**
+   * Access the shell for the publisher container from a different terminal:
+   ```sh
+   docker exec -it <publisher-container-id> /bin/sh
+   ```
+   * Queue jobs:
+   ```sh
+   python examples/client.py
+   ```
+
+6. **Expected Output:**
+
 ```
 ** 2 ZEBROK TASKS DISCOVERED! 
 =====================================================
@@ -54,18 +82,18 @@ DONE!!!
 DONE!!!
 ```
 
-### - Trying out zebrok
-========================
+## Trying out zebrok
 
-* To `install` zebrok use the command `pip install git+https://github.com/kaypee90/zebrok.git#egg=zebrok`
+1. **Install Zebrok**
+```sh
+   pip install git+https://github.com/kaypee90/zebrok.git#egg=zebrok
+```
 
-* Configuring Environment Variables:
-    - WORKER_HOST  &#160; &#160; &#160; &#160; # The IP address for running workers
-    - WORKER_PORT   &#160; &#160; &#160; &#160; &#160; &#160;  &#160;  # The port number workers should listen on
+2. **Configuring Environment Variables:**
+    - `WORKER_HOST: The IP address for running workers (default: localhost)
+    - `WORKER_PORT: The port number workers should listen on (default: 5690)
 
-    -- `If not set defaults to localhost:5690`
-
-* Creating A Task `[tasks.py]`
+3. **Creating a Task `(tasks.py)`**
 ```
 from zebrok import app
 
@@ -74,7 +102,7 @@ def long_running_task(param):
     do_some_time_consuming_task(param)
 ```
 
-* Configuring a worker and registering the task `[examples/start.py]`
+4. **Configuring a Worker and Registering the Task (examples/start.py):**
     - NB: `A task can also be discovered automatically if placed in a tasks.py file in the root folder of the project.`
     `- You can also set number of slave worker threads to be running by passing number_of_slaves argument`
 ```
@@ -87,10 +115,13 @@ worker.register_task(long_running_task)
 worker.start()
 ```
 
-* Starting the Zebrok Worker to listen for tasks -`python examples/start.py` 
+5. **Starting the Zebrok Worker:**
   where **start.py** is the file in which you configured the worker
+  ```sh
+   python examples/start.py
+  ```
 
-* Executing a task `[examples/client.py]`
+6. **Executing a task (`examples/client.py`)**
 ```
 from tasks import long_running_task
 
@@ -101,6 +132,5 @@ long_running_task.run(param="dowork")
 
 
 ### Using a container orchestration technology (like Kubernetes):
-- `number_of_slaves` must always be set to 0, then you can spin a number of replicas for the workers.
-- `WORKER_HOST` Environment variable for a worker must always be `*`
-
+- Set `number_of_slaves` to 0, then spin up multiple replicas for the workers.
+- The `WORKER_HOST` environment variable for a worker must be set `*`
