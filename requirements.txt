@@ -1,2 +1,2 @@
 -r requirements-documentation.txt
-pyzmq==26.2.0
+pyzmq==26.2.1
