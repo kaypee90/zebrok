@@ -6,7 +6,7 @@ setup(
     author="kaypee90",
     author_email="kaypee90@yahoo.com",
     packages=["zebrok"],
-    install_requires=["pyzmq==26.2.1"],
+    install_requires=["pyzmq==26.4.0"],
     version="0.0.1",
     license="MIT",
     description="Brokerless task queue",
