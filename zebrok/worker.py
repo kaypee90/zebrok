@@ -26,7 +26,9 @@ class TaskQueueWorker:
     Listens and receives tasks and uses a task runner to execute them
     """
 
-    def __init__(self, connection, runner) -> None:
+    def __init__(
+        self, connection: BaseSocketConnection, runner: BaseTaskRunner
+    ) -> None:
         self.slaves: List[Any] = []
         self.connection = connection
         self.socket = self.connection.socket
@@ -79,11 +81,11 @@ class TaskQueueWorker:
         self.current_slave = 0
         self.connection.close()
 
-    def add_slave(self, worker) -> None:
+    def add_slave(self, slave_socket: Any) -> None:
         """
-        Adds a slave worker to a master worker
+        Adds a slave worker socket to a master worker
         """
-        self.slaves.append(worker)
+        self.slaves.append(slave_socket)
 
 
 class WorkerInitializer:
@@ -159,7 +161,9 @@ class WorkerInitializer:
             master_worker,
         )
 
-    def _create_master_worker(self, *settings: Any):
+    def _create_master_worker(
+        self, *settings: Any
+    ) -> Tuple[BaseSocketConnection, TaskQueueWorker]:
         """
         Creates the main worker
         """
@@ -172,8 +176,8 @@ class WorkerInitializer:
         max_workers: int,
         host: str,
         port: int,
-        master_socket: Any,
-        master_worker: Any,
+        master_socket: BaseSocketConnection,
+        master_worker: TaskQueueWorker,
     ) -> None:
         """
         Creates worker threads as slaves to be associated with the main worker
