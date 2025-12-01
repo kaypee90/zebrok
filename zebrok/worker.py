@@ -81,11 +81,11 @@ class TaskQueueWorker:
         self.current_slave = 0
         self.connection.close()
 
-    def add_slave(self, worker: Any) -> None:
+    def add_slave(self, slave_socket: Any) -> None:
         """
-        Adds a slave worker to a master worker
+        Adds a slave worker socket to a master worker
         """
-        self.slaves.append(worker)
+        self.slaves.append(slave_socket)
 
 
 class WorkerInitializer:
