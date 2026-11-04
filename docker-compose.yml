@@ -8,7 +8,6 @@ services:
         - WORKER_PORT=5690
       expose:
         - "5690"
-        - "5691"
       command: sleep 365d
 
   publisher:
@@ -18,12 +17,6 @@ services:
       environment:
         - WORKER_HOST=worker
         - WORKER_PORT=5690
-      ports:
-        - "5690:5690"
-        - "5691:5691"
-      expose:
-        - "5690"
-        - "5691"
       command: sleep 365d
-      links:
+      depends_on:
         - worker

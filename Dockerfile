@@ -1,12 +1,27 @@
-FROM python:3.12.0-slim-bookworm
-ENV PYTHONUNBUFFERED 1
+FROM python:3.13-slim-bookworm
 
-RUN mkdir /code
+# WORKER_HOST=* makes a worker listen on all interfaces. Containers that
+# publish tasks must override it with the worker's host name
+# (docker-compose.yml sets WORKER_HOST=worker for both services).
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    WORKER_HOST=* \
+    WORKER_PORT=5690
+
+RUN useradd --create-home --uid 1000 zebrok
+
 WORKDIR /code
 
-COPY requirements.txt requirements-documentation.txt /code/
-RUN pip install -r requirements.txt
+# Install the library first so this layer is cached across code-only changes.
+COPY setup.py README.md LICENSE MANIFEST.in /code/
+COPY zebrok /code/zebrok
+RUN pip install .
 
-COPY . /code/
+COPY --chown=zebrok . /code/
+USER zebrok
 
-ENTRYPOINT  sleep 365d
+EXPOSE 5690
+
+# Starts the example worker. Override the command to run your own entrypoint.
+CMD ["python", "examples/start.py"]

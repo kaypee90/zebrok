@@ -36,24 +36,78 @@ class BaseSocketConnection:
     socket_type = type of connection created by factory
     host = name of the host on which connection is being created
     port = socket connection port
-    socket_address = tcp address for establishing the connection
+    socket_address = address for establishing the connection
     context = current connection context
-    socket =  created socket connectio
+    socket = created socket connection
+    owns_context = True when the context was created by this connection and
+                   must therefore be terminated when the connection closes
     """
 
-    def __init__(self, socket_type: Any, host: str, port: str, context: Any) -> None:
-        self.socket_type = socket_type.value
-        self.host = convert_hostname_to_ip(host)
-        self.port = int(port)
-        self.socket_address = self.get_socket_address()
-        self.context = context
-        self.socket: Any = None
-
-    def close(self) -> None:
+    def __init__(
+        self,
+        socket_type: SocketType,
+        host: str,
+        port: int | str,
+        context: zmq.Context | None = None,
+        address: str | None = None,
+        socket_options: dict[int, Any] | None = None,
+    ) -> None:
         """
-        Closes opened underlying socket connection
+        parameters:
+            socket_type (SocketType): type of socket to initialize
+            host (str): The host ip to use
+            port (int): Port number to connect or listen on
+            context (object): Zmq context to create the socket in. A new one
+                is created (and owned by this connection) when omitted
+            address (str): Full zmq address (e.g. "inproc://name"). When
+                given, host and port are not used to build the address
+            socket_options (dict): zmq socket options applied before the
+                socket binds/connects (some, like IMMEDIATE, only take
+                effect if set first)
+        """
+        self.socket_type = socket_type.value
+        self.port = int(port)
+        if address:
+            self.host = host
+            self.socket_address = address
+        else:
+            self.host = convert_hostname_to_ip(host)
+            self.socket_address = self.get_socket_address()
+        self.owns_context = context is None
+        self.context = zmq.Context() if context is None else context
+        self.socket: Any = None
+        if type(self)._open is BaseSocketConnection._open:
+            # Subclass written against the old API: it creates and
+            # binds/connects the socket itself after calling super().__init__.
+            return
+        self.socket = self.context.socket(self.socket_type)
+        try:
+            for option, value in (socket_options or {}).items():
+                self.socket.setsockopt(option, value)
+            self._open()
+        except Exception:
+            self.close(linger=0)
+            raise
+
+    def _open(self) -> None:
+        """
+        Binds or connects the underlying socket
         """
         raise ZebrokNotImplementedError
+
+    def close(self, linger: int | None = None) -> None:
+        """
+        Closes the underlying socket, and terminates the context if this
+        connection created it.
+
+        parameters:
+            linger (int): milliseconds to wait for unsent messages to be
+                delivered before discarding them (None = zmq default)
+        """
+        if self.socket is not None and not self.socket.closed:
+            self.socket.close(linger=linger)
+        if self.owns_context and not self.context.closed:
+            self.context.term()
 
     def get_socket_address(self) -> str:
         """
@@ -61,7 +115,7 @@ class BaseSocketConnection:
         Returns:
             (str): constructed socket address using host and port
         """
-        return f"tcp://{self.host}:{str(self.port)}"
+        return f"tcp://{self.host}:{self.port}"
 
 
 class ZmqBindConnection(BaseSocketConnection):
@@ -69,30 +123,8 @@ class ZmqBindConnection(BaseSocketConnection):
     Specialized 0mq socket binding implementation
     """
 
-    def __init__(
-        self,
-        socket_type: Any,
-        host: str,
-        port: str,
-        context: Any = None,
-    ) -> None:
-        """
-        Initializes Zmq Bind connection
-        parameters:
-            socket_type (str): type of socket to initialize
-            host (str): The host ip to use
-            port (int): Port number to connect or listen on
-            context (object): Zmq specific contexte object
-        """
-        if not context:
-            context = zmq.Context()
-        super().__init__(socket_type, host, port, context)
-        self.socket = self.context.socket(self.socket_type)
+    def _open(self) -> None:
         self.socket.bind(self.socket_address)
-
-    def close(self) -> None:
-        self.socket.close()
-        self.context.term()
 
 
 class ZmqConnectTypeConnection(BaseSocketConnection):
@@ -100,30 +132,8 @@ class ZmqConnectTypeConnection(BaseSocketConnection):
     Specialized 0mq socket connection implementation
     """
 
-    def __init__(
-        self,
-        socket_type: Any,
-        host: str,
-        port: str,
-        context: Any = None,
-    ) -> None:
-        """
-        Initializes Zmq Connect Type connection
-        parameters:
-            socket_type (str): type of socket to initialize
-            host (str): The host ip to use
-            port (int): Port number to connect or listen on
-            context (object): Zmq specific contexte object
-        """
-        if not context:
-            context = zmq.Context()
-        super().__init__(socket_type, host, port, context)
-        self.socket = self.context.socket(self.socket_type)
+    def _open(self) -> None:
         self.socket.connect(self.socket_address)
-
-    def close(self) -> None:
-        self.socket.close()
-        self.context.term()
 
 
 class ConnectionType:
@@ -136,13 +146,23 @@ class ConnectionType:
     zmq_connect = ZmqConnectTypeConnection.__name__
 
 
+_CONNECTION_CLASSES: dict[str, type[BaseSocketConnection]] = {
+    ConnectionType.zmq_bind: ZmqBindConnection,
+    ConnectionType.zmq_connect: ZmqConnectTypeConnection,
+}
+
+
 class ConnectionFactory:
     """
     Factory class fo instantiating socket connections
     """
 
     @staticmethod
-    def create_connection(connection_type: str, *args: Any) -> BaseSocketConnection:
+    def create_connection(
+        connection_type: str,
+        *args: Any,
+        **kwargs: Any,
+    ) -> BaseSocketConnection:
         """
         Creates sockect connections
 
@@ -152,9 +172,8 @@ class ConnectionFactory:
         Returns:
             BaseSocketConnection : created socket connection
         """
-        connection = globals()[connection_type](*args)
-        assert issubclass(
-            type(connection),
-            BaseSocketConnection,
-        ), f"{type(connection)} must inherit from {str(BaseSocketConnection)}"
-        return connection
+        try:
+            connection_class = _CONNECTION_CLASSES[connection_type]
+        except KeyError:
+            raise ValueError(f"Unknown connection type: {connection_type}") from None
+        return connection_class(*args, **kwargs)

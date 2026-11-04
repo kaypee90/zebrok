@@ -1,4 +1,4 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# This workflow will install Python dependencies, run tests and lint
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
 name: Zebrok
@@ -13,20 +13,24 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.13"]
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python 3.11
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
-        python-version: 3.11
+        python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install ruff pytest
+        # Pin ruff: new releases enable new rules and break the build unannounced.
+        pip install ruff==0.17.3 pytest pytest-timeout
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Run Ruff
       run: ruff check --output-format=github .
-    - name: Test with unittest
+    - name: Test with pytest
       run: |
-        pytest tests
+        pytest --timeout 60 tests

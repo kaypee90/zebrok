@@ -1,5 +1,6 @@
 import inspect
 from abc import ABC, abstractmethod
+from typing import Any
 
 from .app import Task
 from .exceptions import ZebrokNotImplementedError
@@ -37,18 +38,22 @@ class InMemoryTaskRegistry(BaseTaskRegistry, dict):
     In-memory implementation of Task registry
     """
 
-    def register(self, task: Task) -> None:
+    def register(self, task: Any) -> None:
         """
-        Adds a task to in-memory registry
+        Adds a task to in-memory registry. Accepts a Task, a Task subclass,
+        or a plain function (which is wrapped in a Task).
         """
-        task = inspect.isclass(task) and task() or task
-        self[task.get_task_object().__name__] = task
+        if inspect.isclass(task):
+            task = task()
+        if not isinstance(task, Task):
+            task = Task(task)
+        self[task.name] = task
 
-    def unregister(self, name: str) -> None:
+    def unregister(self, name: Any) -> None:
         """
-        Removes a task to in-memory registry
+        Removes a task from in-memory registry, by name or by Task object
         """
-        self.pop(getattr(name, "name", name))
+        self.pop(name.name if isinstance(name, Task) else name)
 
 
 class RegistryType:
@@ -60,13 +65,18 @@ class RegistryType:
     in_memory: str = InMemoryTaskRegistry.__name__
 
 
+_REGISTRY_CLASSES: dict[str, type[BaseTaskRegistry]] = {
+    RegistryType.in_memory: InMemoryTaskRegistry,
+}
+
+
 class RegistryFactory:
     """
     Factory class for instantiating registry classes
     """
 
     @staticmethod
-    def create_registry(registry_type) -> BaseTaskRegistry:
+    def create_registry(registry_type: str) -> BaseTaskRegistry:
         """
         Creates registries
 
@@ -76,9 +86,7 @@ class RegistryFactory:
         Returns:
             BaseTaskRegistry : created registry object
         """
-        registry = globals()[registry_type]()
-        assert issubclass(
-            type(registry),
-            BaseTaskRegistry,
-        ), f"{type(registry)} must inherit from {str(BaseTaskRegistry)}"
-        return registry
+        try:
+            return _REGISTRY_CLASSES[registry_type]()
+        except KeyError:
+            raise ValueError(f"Unknown registry type: {registry_type}") from None
