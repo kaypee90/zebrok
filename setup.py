@@ -16,7 +16,7 @@ setup(
     author="kaypee90",
     author_email="kaypee90@yahoo.com",
     packages=["zebrok"],
-    install_requires=["pyzmq==27.1.0"],
+    install_requires=["pyzmq==27.3.0"],
     python_requires=">=3.10",
     version=VERSION,
     license="MIT",
